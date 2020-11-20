@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Material App',
       debugShowCheckedModeBanner: false,
-      initialRoute: AperturaExitosaDeCasoPage.route,
+      initialRoute: HomePage.route,
       routes: {
         HomePage.route: (_)=>HomePage(),
         RegisterPage.route: (_)=>RegisterPage(),
