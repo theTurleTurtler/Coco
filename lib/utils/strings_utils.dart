@@ -4,3 +4,11 @@ final String homeTextoSecundario = 'Las peticiones serán realizadas a nombre de
 final String aperturaExitosaTextoPrincipal = '¡Muchas garcias!';
 final String aperturaExitosaTextoSecundario = 'Su caso ha sido abierto.';
 final String aperturaExitosaTextoTerciario = 'Le notificaremos los aportes realizados (si los hay) por otros ciudadanos y el momento en que se envíe la solicitud a la entidad correspondiente, al igual que toda respuesta recibida a este caso.';
+
+final List<String> navigationMenuItems = [
+  'Crear Caso',
+  'Casos Abiertos',
+  'Consultar Casos',
+  'Mis Casos',
+  'Salir'
+];

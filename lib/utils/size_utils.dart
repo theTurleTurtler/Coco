@@ -132,7 +132,7 @@ class SizeUtils{
   }
 
   double get normalMainMenuPopUpMenuItemHeigh{
-    return _xasisYasisProm * 0.12;
+    return _xasisYasisProm * 0.09;
   }
 
   double get littleMainMenuPopUpMenuItemHeigh{
