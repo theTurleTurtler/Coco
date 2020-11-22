@@ -33,7 +33,6 @@ class CasosPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
             HeaderBar(),
             _createBodyComponents(),
           ]

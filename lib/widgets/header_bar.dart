@@ -10,13 +10,11 @@ class HeaderBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _initInitialConfiguration(context);
-    final double sizeWidth = MediaQuery.of(context).size.width;
-    return Container(
-      width: sizeWidth,
-      height: _sizeUtils.xasisSobreYasis * 0.075,
-      padding: _createBarPadding(),
-      decoration: _createBarDecoration(),
-      child: _createBarComponents(),
+    return Column(
+      children: [
+        SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
+        _createBar()
+      ],
     );
   }
 
@@ -25,6 +23,17 @@ class HeaderBar extends StatelessWidget {
     final Size size = MediaQuery.of(_context).size;
     _sizeUtils = SizeUtils();
     _sizeUtils.initUtil(size);
+  }
+
+  Widget _createBar(){
+    final double sizeWidth = MediaQuery.of(_context).size.width;
+    return Container(
+      width: sizeWidth,
+      height: _sizeUtils.xasisSobreYasis * 0.08,
+      padding: _createBarPadding(),
+      decoration: _createBarDecoration(),
+      child: _createBarComponents(),
+    );
   }
 
   EdgeInsets _createBarPadding(){
@@ -57,7 +66,6 @@ class HeaderBar extends StatelessWidget {
       ],
     );
   }
-  
 }
 
 class _NavigationMenu extends StatelessWidget {
@@ -110,13 +118,13 @@ class _NavigationMenu extends StatelessWidget {
 
   List<PopupMenuItem<String>> _generarMenuItems(){
     final List<PopupMenuItem<String>> items = [];
-    final List<String> _navigationStringMenuItemsNames = strings.navigationMenuItems;
-    _navigationStringMenuItemsNames.forEach((String name) {
+    final List<Map<String, dynamic>> _navigationMenuInformationItems = strings.navigationMenuItems;
+    _navigationMenuInformationItems.forEach((Map<String, dynamic> currentItem) {
       items.add(
         PopupMenuItem<String>(
-          value: name,
+          value: currentItem['name'],
           height: _sizeUtils.normalMainMenuPopUpMenuItemHeigh,
-          child: _createPupUpMenuItemChild(name)
+          child: _createPupUpMenuItemChild(currentItem)
         )
       );
     });
@@ -132,15 +140,18 @@ class _NavigationMenu extends StatelessWidget {
     );
   }
 
-  Widget _createPupUpMenuItemChild(String name){
-    return Container(
+  Widget _createPupUpMenuItemChild(Map<String, dynamic> currentItem){
+    return GestureDetector(
       child: Text(
-        name,
+        currentItem['name'],
         style: TextStyle(
           color: Colors.white.withOpacity(0.65),
           fontSize: _sizeUtils.normalTextSize * 1.05
         ),
       ),
+      onTap: (){
+        Navigator.of(_context).pushNamed(currentItem['route']);
+      },
     );
   }
 }

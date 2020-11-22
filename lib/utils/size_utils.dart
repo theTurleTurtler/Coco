@@ -51,6 +51,10 @@ class SizeUtils{
     return _xasisYasisProm * 0.022;
   }
 
+  double get normalLabelTextSize{
+    return _xasisYasisProm * 0.0345;
+  }
+
   double get normalIconSize{
     return _xasisYasisProm * 0.05;
   }

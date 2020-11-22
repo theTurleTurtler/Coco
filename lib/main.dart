@@ -1,5 +1,6 @@
 import 'package:coco/pages/apertura_exitosa_de_caso_page.dart';
 import 'package:coco/pages/casos_page.dart';
+import 'package:coco/pages/crear_caso_page.dart';
 import 'package:coco/pages/home_page.dart';
 import 'package:coco/pages/login_page.dart';
 import 'package:coco/pages/register_page.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
         LoginPage.route: (_)=>LoginPage(),
         ValidacionCodigo.route: (_)=>ValidacionCodigo(),
         CasosPage.route: (_)=>CasosPage(),
+        CrearCasoPage.route: (_)=>CrearCasoPage(),
         AperturaExitosaDeCasoPage.route: (_)=>AperturaExitosaDeCasoPage()
       },
     );
