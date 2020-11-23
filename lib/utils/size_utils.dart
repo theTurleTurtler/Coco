@@ -67,10 +67,17 @@ class SizeUtils{
     return _xasisYasisProm * 0.03;
   }
 
-  Map<String, dynamic> get largeFlatButtonPadding{
+  Map<String, double> get largeFlatButtonPadding{
     return {
       'vertical':_xasisYasisProm * 0.003,
       'horizontal':_xasisYasisProm * 0.08
+    };
+  }
+
+  Map<String, double> get shortFlatButtonPadding{
+    return {
+      'vertical':_xasisYasisProm * 0.003,
+      'horizontal':_xasisYasisProm * 0.045
     };
   }
 

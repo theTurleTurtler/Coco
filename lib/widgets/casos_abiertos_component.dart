@@ -6,8 +6,15 @@ import 'package:coco/utils/test/casos_lists.dart' as casos;
 
 class CasosAbiertosComponent extends StatelessWidget {
 
-  BuildContext _context;
+  final double _heightPercentage;
+
   SizeUtils _sizeUtils;
+
+  CasosAbiertosComponent({
+    @required double heightPercentaje
+  }):
+    _heightPercentage = heightPercentaje
+    ;
   
   @override
   Widget build(BuildContext context) {
@@ -17,18 +24,15 @@ class CasosAbiertosComponent extends StatelessWidget {
         children: [
           _crearTitulo(),
           SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
-          _crearCasosCards()
+          _crearCasosCards(),
+          SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
         ],
       ),
     );
   }
 
   void _initInitialConfiguration(BuildContext context){
-    _context = context;
-    final Size size = MediaQuery.of(_context).size;
     _sizeUtils = SizeUtils();
-    //esta línea, solo mientras que este page está en el main como initialRoute
-    _sizeUtils.initUtil(size);
   }
 
   Widget _crearTitulo(){
@@ -45,7 +49,7 @@ class CasosAbiertosComponent extends StatelessWidget {
   Widget _crearCasosCards(){
     final List<CasoCard> casosWidgets = _definirCasosWidgets();
     return Container(
-      height: _sizeUtils.xasisSobreYasis * 0.53,
+      height: _sizeUtils.xasisSobreYasis * _heightPercentage,
       child: GridView.count(
         padding: EdgeInsets.symmetric(
           vertical: _sizeUtils.xasisSobreYasis * 0.005,
@@ -53,8 +57,8 @@ class CasosAbiertosComponent extends StatelessWidget {
         ),
         crossAxisCount: 2,
         mainAxisSpacing: _sizeUtils.xasisSobreYasis * 0.0275,
-        crossAxisSpacing: _sizeUtils.xasisSobreYasis * 0.0275,
-        childAspectRatio: 1.125,
+        crossAxisSpacing: _sizeUtils.xasisSobreYasis * 0.04,
+        childAspectRatio: 1.2,
         children: casosWidgets
       )
     );
@@ -68,4 +72,6 @@ class CasosAbiertosComponent extends StatelessWidget {
     });
     return _casosWidgets;
   }
+
+  
 }

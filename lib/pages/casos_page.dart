@@ -43,14 +43,12 @@ class CasosPage extends StatelessWidget {
 
   Widget _createBodyComponents(){
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: _sizeUtils.littleHorizontalScaffoldPadding
-      ),
+      //TODO: padding
       child: Column(
         children: [
           SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
-          CasosAbiertosComponent(),
-          SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
+          CasosAbiertosComponent(heightPercentaje: 0.56),
+          SizedBox(height: _sizeUtils.littleSizedBoxHeigh),
           CasosConRequerimEnviados()
         ],
       ),

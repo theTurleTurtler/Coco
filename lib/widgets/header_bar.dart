@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:coco/utils/size_utils.dart';
-import 'package:coco/utils/strings_utils.dart' as strings;
+import 'package:coco/utils/navigation_utils.dart' as navigation;
 
 class HeaderBar extends StatelessWidget {
   
@@ -118,7 +118,7 @@ class _NavigationMenu extends StatelessWidget {
 
   List<PopupMenuItem<String>> _generarMenuItems(){
     final List<PopupMenuItem<String>> items = [];
-    final List<Map<String, dynamic>> _navigationMenuInformationItems = strings.navigationMenuItems;
+    final List<Map<String, dynamic>> _navigationMenuInformationItems = navigation.navigationMenuItems;
     _navigationMenuInformationItems.forEach((Map<String, dynamic> currentItem) {
       items.add(
         PopupMenuItem<String>(

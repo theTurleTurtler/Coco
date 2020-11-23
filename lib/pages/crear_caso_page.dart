@@ -29,6 +29,7 @@ class _CrearCasoPageState extends State<CrearCasoPage> {
   Widget build(BuildContext context) {
     _initInitialConfiguration(context);
     return Scaffold(
+      backgroundColor: Colors.blueGrey[50],
       body: SingleChildScrollView(
         child: SafeArea(
           child: _crearComponentes(),
@@ -39,16 +40,14 @@ class _CrearCasoPageState extends State<CrearCasoPage> {
   
   void _initInitialConfiguration(BuildContext context){
     _context = context;
-    final Size size = MediaQuery.of(_context).size;
     _sizeUtils = SizeUtils();
-    _sizeUtils.initUtil(size);
   }
 
   Widget _crearComponentes(){
     return Container(
       height: _sizeUtils.xasisSobreYasis * 1.25,
       child: ListView(
-        padding: EdgeInsets.symmetric(vertical: _sizeUtils.xasisSobreYasis * 0.03),
+        padding: EdgeInsets.only(bottom: _sizeUtils.xasisSobreYasis * 0.03),
         children: [
           HeaderBar(),
           _crearBodyComponents()

@@ -31,7 +31,7 @@ final List<Caso> casosAbiertos = [
   Caso.fromJson(
     json: {
       'titulo':'Restaurante chino sirviendo comidas de dudable procedencia en cll 20 con cra 18',
-      'descripcion':'Desde que llegó ese restaurante, las ratas del vecindario se comenzaron a desaparecer. Antes se veía pasar un ratón de vez en vez. Ahora, temo que la fauna del área esté demasiado degenerada.',
+      'descripcion':'Desde que llegó ese restaurante, las ratas del vecindario se comenzaron a desaparecer. Antes se veía pasar un ratón de vez en vez. Ahora, temo que la fauna de la zona esté a punto de desaparecer.',
       'fecha_publicacion':DateTime(2020, 6, 25),
       'ciudad':'Cali',
       'estado':'abierto'

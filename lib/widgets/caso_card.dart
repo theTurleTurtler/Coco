@@ -1,4 +1,5 @@
 import 'package:coco/models/caso.dart';
+import 'package:coco/pages/caso_detail_page.dart';
 import 'package:coco/utils/size_utils.dart';
 import 'package:flutter/material.dart';
 
@@ -16,12 +17,17 @@ class CasoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _initInitialConfiguration(context);
-    return Container( 
-      width: _sizeUtils.xasisSobreYasis * 0.275,
-      height: _sizeUtils.xasisSobreYasis * 0.275,
-      padding: _createCardPadding(),
-      decoration: _crearCardDecoration(),
-      child: _createCardComponents()
+    return GestureDetector(
+      child: Container( 
+        width: _sizeUtils.xasisSobreYasis * 0.275,
+        height: _sizeUtils.xasisSobreYasis * 0.275,
+        padding: _createCardPadding(),
+        decoration: _crearCardDecoration(),
+        child: _createCardComponents()
+      ),
+      onTap: (){
+        Navigator.of(context).pushReplacementNamed(CasoDetailPage.route, arguments: _caso);
+      },
     );
   }
 
