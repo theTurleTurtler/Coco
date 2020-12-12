@@ -1,13 +1,21 @@
 import 'package:coco/models/caso.dart';
 import 'package:flutter/material.dart';
 import 'package:coco/utils/size_utils.dart';
-import 'package:coco/widgets/caso_card.dart';
+import 'package:coco/widgets/casos/caso_card.dart';
 import 'package:coco/utils/test/casos_lists.dart' as casos;
 
-class CasosConRequerimEnviados extends StatelessWidget {
+class CasosConRequerimEnviadosComponent extends StatelessWidget {
+
+  final double _heightPercentage;
 
   BuildContext _context;
   SizeUtils _sizeUtils;
+
+  CasosConRequerimEnviadosComponent({
+    @required double heightPercentaje
+  }):
+    _heightPercentage = heightPercentaje
+    ;
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +24,8 @@ class CasosConRequerimEnviados extends StatelessWidget {
       child: Column(
         children: [
           _crearTitulo(),
-          SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
-          _crearCasosCards()
+          SizedBox(height: _sizeUtils.littleSizedBoxHeigh),
+          _crearCasosCards(),
         ],
       ),
     );
@@ -31,9 +39,10 @@ class CasosConRequerimEnviados extends StatelessWidget {
    Widget _crearTitulo(){
     return Center(
       child: Text(
-        'Requerimientos enviados',
+        'REQUERIMIENTOS ENVIADOS',
         style: TextStyle(
-          fontSize: _sizeUtils.titleSize
+          fontSize: _sizeUtils.titleSize,
+          color: Colors.black54
         ),
       ),
     );
@@ -42,14 +51,9 @@ class CasosConRequerimEnviados extends StatelessWidget {
   Widget _crearCasosCards(){
     final List<Widget> casosWidgets = _definirCasosWidgets();
     return Container(
-      height: _sizeUtils.xasisSobreYasis * 0.28,
+      height: _sizeUtils.xasisSobreYasis * _heightPercentage,
       width: _sizeUtils.xasisSobreYasis * 0.75,
       child: ListView(
-        padding: EdgeInsets.symmetric(
-          vertical: _sizeUtils.xasisSobreYasis * 0.02,
-          horizontal: _sizeUtils.xasisSobreYasis * 0.01
-        ),
-        scrollDirection: Axis.horizontal,
         children: casosWidgets,
       )
     );

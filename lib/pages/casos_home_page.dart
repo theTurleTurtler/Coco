@@ -1,10 +1,9 @@
 import 'package:coco/utils/size_utils.dart';
-import 'package:coco/widgets/casos_abiertos_component.dart';
-import 'package:coco/widgets/casos_con_requerim_enviados.dart';
-import 'package:coco/widgets/header_bar.dart';
+import 'package:coco/widgets/casos/muestra_casos.dart';
+import 'package:coco/widgets/header_bar/header_bar.dart';
 import 'package:flutter/material.dart';
 
-class CasosPage extends StatelessWidget {
+class CasosHomePage extends StatelessWidget {
 
   static final route = 'casos';
 
@@ -15,7 +14,7 @@ class CasosPage extends StatelessWidget {
   Widget build(BuildContext context) {
     _initInitialConfiguration(context);
     return Scaffold(
-      backgroundColor: Colors.blueGrey[50],
+      backgroundColor: Theme.of(_context).backgroundColor,
       body: _crearComponentes(),
     );
   }
@@ -47,9 +46,9 @@ class CasosPage extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
-          CasosAbiertosComponent(heightPercentaje: 0.56),
-          SizedBox(height: _sizeUtils.littleSizedBoxHeigh),
-          CasosConRequerimEnviados()
+          MuestraCasos.abiertos(),
+          SizedBox(height: _sizeUtils.xasisSobreYasis * 0.03),
+          MuestraCasos.requerimientosEnviados()
         ],
       ),
     );

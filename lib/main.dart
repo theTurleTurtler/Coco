@@ -1,15 +1,14 @@
+import 'package:flutter/material.dart';
 import 'package:coco/pages/apertura_exitosa_de_caso_page.dart';
 import 'package:coco/pages/caso_detail_page.dart';
-import 'package:coco/pages/casos_abiertos_page.dart';
-import 'package:coco/pages/casos_page.dart';
-import 'package:coco/pages/casos_requerimientos_enviados_page.dart';
-import 'package:coco/pages/crear_caso_page.dart';
-import 'package:coco/pages/home_page.dart';
+import 'package:coco/pages/casos_home_page.dart';
+import 'package:coco/pages/lista_de_casos_page.dart';
+import 'package:coco/pages/modificar_caso_page.dart';
 import 'package:coco/pages/login_page.dart';
+import 'package:coco/pages/register_dashboard_page.dart';
 import 'package:coco/pages/register_page.dart';
 import 'package:coco/pages/validacion_codigo_page.dart';
-import 'package:flutter/material.dart';
- 
+
 void main() => runApp(MyApp());
  
 class MyApp extends StatelessWidget {
@@ -18,17 +17,24 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Material App',
       debugShowCheckedModeBanner: false,
-      initialRoute: CasosPage.route,
+      initialRoute: LoginPage.route,
+      theme: ThemeData(
+        primaryColor: Color.fromRGBO(14, 130, 167, 1),
+        backgroundColor: Color.fromRGBO(245, 245, 245, 1),
+        primaryColorDark: Color.fromRGBO(9, 115, 148, 1),
+      ),
       routes: {
-        HomePage.route: (_)=>HomePage(),
-        RegisterPage.route: (_)=>RegisterPage(),
         LoginPage.route: (_)=>LoginPage(),
+        RegisterDashBoardPage.route: (_)=>RegisterDashBoardPage(),
+        RegisterPage.route: (_)=>RegisterPage(),       
         ValidacionCodigo.route: (_)=>ValidacionCodigo(),
-        CasosPage.route: (_)=>CasosPage(),
-        CasosAbiertosPage.route:(_)=>CasosAbiertosPage(),
-        CasosRequerimientosEnviadosPage.route: (_)=>CasosRequerimientosEnviadosPage(),
+        CasosHomePage.route: (_)=>CasosHomePage(),
+        ListaDeCasosPage.routeCasosAbiertos: (_)=>ListaDeCasosPage.casosAbiertos(),
+        ListaDeCasosPage.routeCasosConRequerimientosAbiertos: (_)=> ListaDeCasosPage.casosConReqEnviados(),
         CasoDetailPage.route: (_)=>CasoDetailPage(),
-        CrearCasoPage.route: (_)=>CrearCasoPage(),
+        ModificarCasoPage.routeCrear: (_)=>ModificarCasoPage.crear(),
+        ModificarCasoPage.routeEditar: (_)=>ModificarCasoPage.editar(),
+        ModificarCasoPage.routeAportar: (_)=>ModificarCasoPage.proponer(),
         AperturaExitosaDeCasoPage.route: (_)=>AperturaExitosaDeCasoPage(),
       },
     );

@@ -1,11 +1,18 @@
+import 'package:coco/pages/apertura_exitosa_de_caso_page.dart';
+import 'package:coco/pages/casos_home_page.dart';
 import 'package:coco/utils/size_utils.dart';
+import 'package:coco/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class RegisterPage extends StatelessWidget {
   static final String route = 'register';
   BuildContext _context;
   SizeUtils _sizeUtils;
+
+  String _userName;
+  String _email;
+  String _password;
+  String _confirmedPassword;
 
   @override
   Widget build(BuildContext context) {
@@ -33,68 +40,117 @@ class RegisterPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.2),
-            _crearTextoRegistroExterno(),
+            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.05),
+            HeaderLogo(),  
+            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.05),
+            _crearTitulo(),
+            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.055),
+            _crearFormInput('username'),
             SizedBox(height: _sizeUtils.xasisSobreYasis * 0.022),
-            _crearFacebookButton(),
-            SizedBox(height: _sizeUtils.littleSizedBoxHeigh),
-            _crearGoogleButton(),
-            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.1),
-            _crearEmailInput(),
-            SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
-            _crearPasswordInput(),
-            SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
-            _crearConfirmPasswordInput(),
-            SizedBox(height: _sizeUtils.largeSizedBoxHeigh),
-            _crearBotonSubmit()
+            _crearFormInput('email'),
+            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.022),
+            _crearFormInput('password'),
+            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.022),
+            _crearFormInput('confirm_password'),
+            SizedBox(height: _sizeUtils.largeSizedBoxHeigh * 0.9),
+            _crearRegisterButton(),
+            SizedBox(height: _sizeUtils.largeSizedBoxHeigh)
           ],
         ),
       ),
     );
   }
 
-  Widget _crearTextoRegistroExterno(){
+  Widget _crearTitulo(){
     return Center(
       child: Text(
-        'Registrate rápidamente con',
+        'REGÍSTRATE',
         textAlign: TextAlign.justify,
         style: TextStyle(
-          fontSize: _sizeUtils.subtitleSize
+          fontSize: _sizeUtils.titleSize,
+          color: Colors.black54
         ),
       ),
     );
   }
 
-  Widget _crearFacebookButton(){
-    final Map<String, dynamic> padding = _sizeUtils.largeIconButtonPadding;
-    return MaterialButton(
-      padding: EdgeInsets.symmetric(horizontal: padding['horizontal'], vertical: padding['vertical']),
-      shape: StadiumBorder(),
-      color: Colors.black87,
-      child: Icon(
-        FontAwesomeIcons.facebook,
-        //color: Color.fromRGBO(66,103,178, 1)
-        color: Colors.white,
-      ),
-      onPressed: (){
-
-      },
+  Widget _crearFormInput(String tipo){
+    final Widget input = _generarInputSegunTipo(tipo);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _crearFormInputTitle(tipo),
+        SizedBox(height: _sizeUtils.littleSizedBoxHeigh * 0.5),
+        input
+      ],
     );
   }
 
-  Widget _crearGoogleButton(){
-    final Map<String, dynamic> padding = _sizeUtils.largeIconButtonPadding;
-    return MaterialButton(
-      padding: EdgeInsets.symmetric(horizontal: padding['horizontal'], vertical: padding['vertical']),
-      shape: StadiumBorder(),
-      color: Colors.black87,
-      child: Icon(
-        FontAwesomeIcons.google,
-        //color: Color.fromRGBO(219,68,55, 1),
-        color: Colors.white,
+  Widget _crearFormInputTitle(String tipoInput){
+    final String title = _elegirTituloDeInput(tipoInput);
+    return Container(
+      padding: EdgeInsets.only(left: _sizeUtils.xasisSobreYasis * 0.03),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: _sizeUtils.subtitleSize * 0.95,
+          color: Colors.black54
+        ),
       ),
-      onPressed: (){
+    );
+  }
 
+  String _elegirTituloDeInput(String tipoInput){
+    switch(tipoInput){
+      case 'username':
+        return 'NOMBRE DE USUARIO';
+      case 'email':
+        return 'CORREO';
+      case 'password': 
+        return 'CONTRASEÑA';
+      case 'confirm_password': 
+        return 'CONFIRMAR CONTRASEÑA';
+      default:
+        return 'INPUT DESCONOCIDO';
+    }
+  }
+
+  Widget _generarInputSegunTipo(String tipo){
+    Widget input;
+    switch(tipo){
+      case 'username':
+        input = _crearUserNameInput();
+      break;
+      case 'email':
+        input = _crearEmailInput();
+      break;
+      case 'password':
+        input = _crearPasswordInput();
+      break;
+      case 'confirm_password':
+        input = _crearConfirmPasswordInput();
+      break;
+    }
+    return input;
+  }
+
+  Widget _crearUserNameInput(){
+    return TextField(
+      keyboardType: TextInputType.text,
+      cursorColor: Colors.black,
+      textAlignVertical: TextAlignVertical.center,
+      decoration: InputDecoration(
+        isCollapsed: true,
+        prefixIcon: Icon(
+          //FontAwesomeIcons.lock
+          Icons.person_outline,
+          size: _sizeUtils.normalIconSize,
+        ),
+        border: _crearInputBorder(),
+        enabledBorder: _crearInputBorder(),
+      ),
+      onChanged: (String newValue){
+        _userName = newValue;
       },
     );
   }
@@ -102,50 +158,99 @@ class RegisterPage extends StatelessWidget {
   Widget _crearEmailInput(){
     return TextField(
       keyboardType: TextInputType.emailAddress,
+      cursorColor: Colors.black,
+      textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
-        labelText: 'Correo electrónico',
+        isCollapsed: true,
+        prefixIcon: Icon(
+          Icons.alternate_email,
+          size: _sizeUtils.normalIconSize,
+        ),
+        enabledBorder: _crearInputBorder(),
+        border: _crearInputBorder(),
       ),
+      onChanged: (String newValue){
+        _email = newValue;
+      },
     );
   }
 
   Widget _crearPasswordInput(){
     return TextField(
-      keyboardType: TextInputType.emailAddress,
+      keyboardType: TextInputType.text,
       obscureText: true,
       cursorColor: Colors.black,
+      textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
-        labelText: 'Contraseña',
+        isCollapsed: true,
+        prefixIcon: Icon(
+          //FontAwesomeIcons.lock
+          Icons.lock_outline,
+          size: _sizeUtils.normalIconSize,
+        ),
+        border: _crearInputBorder(),
+        enabledBorder: _crearInputBorder(),
       ),
+      onChanged: (String newValue){
+        _password = newValue;
+      },
     );
   }
 
   Widget _crearConfirmPasswordInput(){
     return TextField(
-      keyboardType: TextInputType.emailAddress,
+      keyboardType: TextInputType.text,
       obscureText: true,
       cursorColor: Colors.black,
+      textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
-        labelText: 'Confirmar contraseña',
+        isCollapsed: true,
+        prefixIcon: Icon(
+          //FontAwesomeIcons.lock
+          Icons.lock_outline,
+          size: _sizeUtils.normalIconSize,
+        ),
+        border: _crearInputBorder(),
+        enabledBorder: _crearInputBorder(),
       ),
+      onChanged: (String newValue){
+        _confirmedPassword = newValue;
+      },
     );
   }
 
-  Widget _crearBotonSubmit(){
-    final double largeFlatButtonPadding = _sizeUtils.largeFlatButtonPadding['horizontal'];
-    return MaterialButton(
-      child: Text(
-        'Registrate',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: _sizeUtils.flatButtonTextSize
-        ),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: largeFlatButtonPadding),
-      shape: StadiumBorder(),
-      color: Colors.black87,
-      onPressed: (){
+  InputBorder _crearInputBorder(){
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(_sizeUtils.xasisSobreYasis * 0.065),
+      borderSide: BorderSide(
+        color: Colors.black,
+        width: 1.75
+      )
+    );
+  }
 
+  Widget _crearRegisterButton(){
+    final Map<String, double> fatLargeFlatButtonPadding = _sizeUtils.fatLargeFlatButtonPadding;
+    final double horizontalPadding = fatLargeFlatButtonPadding['horizontal'];
+    final double verticalPadding = fatLargeFlatButtonPadding['vertical'];
+    return MaterialButton(
+      child: _crearTextoDeBoton(),
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
+      shape: StadiumBorder(),
+      color: Theme.of(_context).primaryColor,
+      onPressed: (){
+        Navigator.of(_context).pushReplacementNamed(CasosHomePage.route);
       },
+    );
+  }
+
+  Widget _crearTextoDeBoton(){
+    return Text(
+      'REGISTRARSE',
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: _sizeUtils.littleTitleSize * 0.95
+      ),
     );
   }
 }

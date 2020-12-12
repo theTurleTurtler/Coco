@@ -1,5 +1,6 @@
-import 'package:coco/pages/home_page.dart';
+import 'package:coco/pages/casos_home_page.dart';
 import 'package:coco/utils/size_utils.dart';
+import 'package:coco/widgets/header_bar/header_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:coco/utils/strings_utils.dart' as strings;
 
@@ -29,20 +30,12 @@ class AperturaExitosaDeCasoPage extends StatelessWidget {
   Widget _crearComponentes(){
     return SafeArea(
       child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: _sizeUtils.littleHorizontalScaffoldPadding
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
-            _crearLogo(),
-            SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
-            _crearTextoPrincipal(),
-            SizedBox(height: _sizeUtils.littleSizedBoxHeigh),
-            _crearTextoSecundario(),
-            SizedBox(height: _sizeUtils.littleSizedBoxHeigh),
-            _crearTextoTerciario(),
+            HeaderBar(),
+            SizedBox(height: _sizeUtils.giantSizedBoxHeight),
+            _createMessageComponents(),
             SizedBox(height: _sizeUtils.veryMuchLargeSizedBoxHeigh),
             _crearBotonInicio()
           ],
@@ -51,13 +44,17 @@ class AperturaExitosaDeCasoPage extends StatelessWidget {
     );
   }
 
-  Widget _crearLogo(){
-    final Map<String, dynamic> mainLogoSize = _sizeUtils.mainLogoSize;
-    return Center(
-      child: Image.asset(
-        'assets/logo_coco_2.png',
-        height: mainLogoSize['vertical'],
-        width: mainLogoSize['horizontal'],
+  Widget _createMessageComponents(){
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: _sizeUtils.normalHorizontalScaffoldPadding),
+      child: Column(
+        children: [
+          _crearTextoPrincipal(),
+          SizedBox(height: _sizeUtils.largeSizedBoxHeigh),
+          _crearTextoSecundario(),
+          SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
+          _crearTextoTerciario(),
+        ],
       ),
     );
   }
@@ -67,7 +64,8 @@ class AperturaExitosaDeCasoPage extends StatelessWidget {
       strings.aperturaExitosaTextoPrincipal,
       textAlign: TextAlign.justify,
       style: TextStyle(
-        fontSize: _sizeUtils.titleSize * 1.2
+        fontSize: _sizeUtils.superTitleSize,
+        color: Colors.black54
       ),
     );
   }
@@ -77,7 +75,8 @@ class AperturaExitosaDeCasoPage extends StatelessWidget {
       strings.aperturaExitosaTextoSecundario,
       textAlign: TextAlign.justify,
       style: TextStyle(
-        fontSize: _sizeUtils.subtitleSize*1.2
+        fontSize: _sizeUtils.subtitleSize,
+        color: Colors.black54
       ),
     );
   }
@@ -87,27 +86,27 @@ class AperturaExitosaDeCasoPage extends StatelessWidget {
       strings.aperturaExitosaTextoTerciario,
       textAlign: TextAlign.justify,
       style: TextStyle(
-        fontSize: _sizeUtils.subtitleSize*1.15
+        fontSize: _sizeUtils.normalTextSize,
       ),
     );
   }
 
   Widget _crearBotonInicio(){
-    final double largeFlatButtonPadding = _sizeUtils.largeFlatButtonPadding['horizontal'];
+    final double horizontalPadding = _sizeUtils.shortFlatButtonPadding['horizontal'];
     return MaterialButton(
       child: Text(
-        'Volver al inicio',
+        'VOLVER AL INICIO',
         style: TextStyle(
           color: Colors.white,
           fontSize: _sizeUtils.flatButtonTextSize
         ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: largeFlatButtonPadding),
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
       shape: StadiumBorder(),
-      color: Colors.black87,
+      color: Theme.of(_context).primaryColor,
       onPressed: (){
         //TODO: implementar navegación al verdadero inicio_page
-        Navigator.of(_context).pushReplacementNamed(HomePage.route);
+        Navigator.of(_context).pushReplacementNamed(CasosHomePage.route);
       },
     );
   }

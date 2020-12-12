@@ -1,27 +1,27 @@
-import 'package:coco/pages/casos_abiertos_page.dart';
-import 'package:coco/pages/casos_requerimientos_enviados_page.dart';
-import 'package:coco/pages/crear_caso_page.dart';
-import 'package:coco/pages/home_page.dart';
+import 'package:coco/pages/casos_home_page.dart';
+import 'package:coco/pages/lista_de_casos_page.dart';
+import 'package:coco/pages/login_page.dart';
+import 'package:coco/pages/modificar_caso_page.dart';
 
 final List<Map<String, dynamic>> navigationMenuItems = [
   {
     'name':'Crear Caso',
-    'route':CrearCasoPage.route
+    'route':ModificarCasoPage.routeCrear
   },
   {
     'name':'Casos Abiertos',
-    'route':CasosAbiertosPage.route
+    'route':ListaDeCasosPage.routeCasosAbiertos
   },
   {
     'name':'Consultar Casos',
-    'route':CasosRequerimientosEnviadosPage.route
+    'route':ListaDeCasosPage.routeCasosConRequerimientosAbiertos
   },
   {
     'name':'Mis Casos',
-    'route':HomePage.route
+    'route':CasosHomePage.route
   },
   {
     'name':'Salir',
-    'route':HomePage.route
+    'route':LoginPage.route
   }
 ];

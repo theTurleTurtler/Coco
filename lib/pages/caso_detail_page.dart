@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:coco/models/caso.dart';
 import 'package:coco/utils/size_utils.dart';
-import 'package:coco/widgets/header_bar.dart';
+import 'package:coco/widgets/header_bar/header_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 
@@ -47,7 +47,7 @@ class CasoDetailPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _crearTitulo(),
+          _crearNombre(),
           SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
           _crearCiudad(),
           SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
@@ -67,9 +67,9 @@ class CasoDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _crearTitulo(){
+  Widget _crearNombre(){
     return Text(
-      _caso.titulo,
+      _caso.nombre,
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: _sizeUtils.subtitleSize,
@@ -80,7 +80,7 @@ class CasoDetailPage extends StatelessWidget {
   
   Widget _crearCiudad(){
     return Text(
-      _caso.ciudad,
+      _caso.direccion,
       style: TextStyle(
         fontSize: _sizeUtils.titleSize,
         color: Colors.black87

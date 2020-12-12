@@ -1,5 +1,5 @@
 import 'package:coco/models/caso.dart';
-import 'package:coco/widgets/caso_card.dart';
+import 'package:coco/widgets/casos/caso_card.dart';
 import 'package:flutter/material.dart';
 import 'package:coco/utils/size_utils.dart';
 import 'package:coco/utils/test/casos_lists.dart' as casos;
@@ -8,6 +8,7 @@ class CasosAbiertosComponent extends StatelessWidget {
 
   final double _heightPercentage;
 
+  BuildContext _context;
   SizeUtils _sizeUtils;
 
   CasosAbiertosComponent({
@@ -23,24 +24,25 @@ class CasosAbiertosComponent extends StatelessWidget {
       child: Column(
         children: [
           _crearTitulo(),
-          SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
-          _crearCasosCards(),
-          SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
+          SizedBox(height: _sizeUtils.littleSizedBoxHeigh),
+          _crearCasosCards()
         ],
       ),
     );
   }
 
-  void _initInitialConfiguration(BuildContext context){
+  void _initInitialConfiguration(BuildContext appContext){
+    _context = appContext;
     _sizeUtils = SizeUtils();
   }
 
   Widget _crearTitulo(){
     return Center(
       child: Text(
-        'Casos abiertos',
+        'CASOS ABIERTOS',
         style: TextStyle(
-          fontSize: _sizeUtils.titleSize
+          fontSize: _sizeUtils.titleSize,
+          color: Colors.black54
         ),
       ),
     );
@@ -50,16 +52,8 @@ class CasosAbiertosComponent extends StatelessWidget {
     final List<CasoCard> casosWidgets = _definirCasosWidgets();
     return Container(
       height: _sizeUtils.xasisSobreYasis * _heightPercentage,
-      child: GridView.count(
-        padding: EdgeInsets.symmetric(
-          vertical: _sizeUtils.xasisSobreYasis * 0.005,
-          horizontal: _sizeUtils.xasisSobreYasis * 0.008
-        ),
-        crossAxisCount: 2,
-        mainAxisSpacing: _sizeUtils.xasisSobreYasis * 0.0275,
-        crossAxisSpacing: _sizeUtils.xasisSobreYasis * 0.04,
-        childAspectRatio: 1.2,
-        children: casosWidgets
+      child: ListView(
+        children: casosWidgets,
       )
     );
   }
@@ -72,6 +66,5 @@ class CasosAbiertosComponent extends StatelessWidget {
     });
     return _casosWidgets;
   }
-
   
 }

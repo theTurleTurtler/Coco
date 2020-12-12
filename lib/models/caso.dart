@@ -3,32 +3,44 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 
 class Caso{
-  final String titulo;
+  final String tipoDeSolicitud;
+  final bool conoceDatosDeEntidadDestino;
+  final String nombre;
   final String descripcion;
   final DateTime fechaPublicacion;
   final String estado;
   //mientras implementamos el uso de LatLng
-  final String ciudad;
+  final String direccion;
+  final double latitud;
+  final double longitud;
   //TODO: volver final cuando se haya implementado la obtención de multimedia desde el back
   List<File> multimediaItems;
 
   Caso({
-    @required this.titulo,
+    @required this.tipoDeSolicitud,
+    @required this.conoceDatosDeEntidadDestino,
+    @required this.nombre,
     @required this.descripcion,
     @required this.fechaPublicacion,
     @required this.estado,
-    @required this.ciudad,
+    @required this.direccion,
+    @required this.latitud,
+    @required this.longitud,
     @required this.multimediaItems 
   });
 
   Caso.fromJson({
     @required Map<String, dynamic> json
   }):
-    this.titulo = json['titulo'],
+    this.tipoDeSolicitud = json['tipo_de_solicitud'],
+    this.conoceDatosDeEntidadDestino = json['conoce_datos_de_entidad_destino'],
+    this.nombre = json['nombre'],
     this.descripcion = json['descripcion'],
     this.fechaPublicacion = json['fecha_publicacion'],
     this.estado = json['estado'],
-    this.ciudad = json['ciudad'],
+    this.direccion = json['direccion'],
+    this.latitud = json['latitud'],
+    this.longitud = json['longitud'],
     this.multimediaItems = json['multimedia_items']
   {
     //TODO: Quitar cuando esté hecha la parte de obtener multimedia del back
@@ -37,27 +49,39 @@ class Caso{
   
 
   Map<String, dynamic> get toJson => {
-    'titulo':this.titulo,
+    'tipo_de_solicitud':this.tipoDeSolicitud,
+    'conoce_datos_de_entidad_destino':this.conoceDatosDeEntidadDestino,
+    'nombre':this.nombre,
     'descripcion':this.descripcion,
     'fecha_publicacion':this.fechaPublicacion,
     'estado':this.estado,
-    'ciudad':this.ciudad,
+    'direccion':this.direccion,
+    'latitud':this.latitud,    
+    'longitud':this.longitud,
     'multimedia_items':this.multimediaItems
   };
 
   Caso copyWith({
-    String titulo,
+    String tipoDeSolicitud,
+    String conoceDatosDeEntidadDestino,
+    String nombre,
     String descripcion,
     DateTime fechaPublicacion,
     String estado,
-    String ciudad,
+    String direccion,
+    String latitud,
+    String longitud,    
     List<File> multimediaItems
   })=>Caso(
-    titulo: titulo??this.titulo,
+    tipoDeSolicitud: tipoDeSolicitud??this.tipoDeSolicitud,
+    conoceDatosDeEntidadDestino: conoceDatosDeEntidadDestino??this.conoceDatosDeEntidadDestino,
+    nombre: nombre??this.nombre,
     descripcion: descripcion??this.descripcion,
     fechaPublicacion: fechaPublicacion??this.fechaPublicacion,
     estado: estado??this.estado,
-    ciudad: ciudad??this.ciudad,
+    direccion: direccion??this.direccion,
+    latitud: latitud??this.latitud,    
+    longitud: longitud??this.longitud,
     multimediaItems: multimediaItems??this.multimediaItems
   );
 

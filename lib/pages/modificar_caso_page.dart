@@ -1,0 +1,494 @@
+import 'package:coco/enums/tipo_widget_caso_form.dart';
+import 'package:coco/models/caso.dart';
+import 'package:coco/pages/apertura_exitosa_de_caso_page.dart';
+import 'package:coco/pages/casos_home_page.dart';
+import 'package:coco/widgets/google_maps/google_maps.dart';
+import 'package:flutter/material.dart';
+import 'package:coco/utils/size_utils.dart';
+import 'package:coco/widgets/header_bar/header_bar.dart';
+import 'package:coco/utils/strings_utils.dart' as strings;
+
+/**
+ * Tiene tres constructores debido a que se deben implementar tres vistas
+ * distintas (crear, editar, proponer), pero con los mismos componentes, 
+ * solo con algunos pocos cambios entre ellos.
+ */
+//TODO: Buscar un mejor nombre para la clase
+class ModificarCasoPage extends StatefulWidget {
+
+  static final routeCrear = 'crear_caso';
+  static final routeEditar = 'editar_caso';
+  static final routeAportar = 'aportar_a_caso';
+  /**
+   * El tipo de widget que este será(el propósito que cumplirá)
+   * -hay tres posibles tipos-
+   */
+  final TipoWidgetCasoForm _tipoWidgetCasoForm;
+  final bool _isAlreadyCreated;
+
+  ModificarCasoPage.crear()
+  : _tipoWidgetCasoForm = TipoWidgetCasoForm.CREAR,
+    _isAlreadyCreated = false
+  ;
+
+  ModificarCasoPage.editar()
+  : _tipoWidgetCasoForm = TipoWidgetCasoForm.EDITAR,
+    _isAlreadyCreated = true
+  ;
+
+  ModificarCasoPage.proponer()
+  : _tipoWidgetCasoForm = TipoWidgetCasoForm.APORTAR,
+    _isAlreadyCreated = true
+  ;
+
+  @override
+  _ModificarCasoPageState createState() => _ModificarCasoPageState();
+}
+
+class _ModificarCasoPageState extends State<ModificarCasoPage> {
+
+  BuildContext _context;
+  SizeUtils _sizeUtils;
+  String _submitNavigationRoute;
+  String _widgetTitle;
+
+  String _tipoDeSolicitud = strings.tiposDeSolicitud[0];
+  List<bool> _selectedConoceDatosEntidadDestinoElements = [
+    true,
+    false
+  ];
+  String _nombreCaso = '';
+  String _descripcionCaso = '';
+  String _direccion = '';
+
+  //solo se instanciará si este widget no es para crear (_isAlreadyCreated)
+  Caso _caso;
+
+  @override
+  Widget build(BuildContext context) {
+    _initInitialConfiguration(context);
+    return Scaffold(
+      backgroundColor: Colors.blueGrey[50],
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: _crearComponentes(),
+        ),
+      )
+    );
+  }
+  
+  void _initInitialConfiguration(BuildContext context){
+    _context = context;
+    _sizeUtils = SizeUtils();
+    if(widget._isAlreadyCreated){
+      _caso = ModalRoute.of(context).settings.arguments;
+      _initInitialInputValues();
+    }
+    _initValoresDependientesDeTipoWidget();
+  }
+
+  void _initInitialInputValues(){
+    _tipoDeSolicitud = _caso.tipoDeSolicitud;
+    _initInitialToggleElements();
+    _nombreCaso = _caso.nombre;
+    _descripcionCaso = _caso.descripcion;
+    _direccion = _caso.direccion;
+    //TODO: Implementar el resto de elementos
+  }
+
+  void _initInitialToggleElements(){
+    if(!_caso.conoceDatosDeEntidadDestino){
+      _selectedConoceDatosEntidadDestinoElements = [
+        false,
+        true
+      ];
+    }   
+  }
+
+  Widget _crearComponentes(){
+    return Container(
+      height: _sizeUtils.xasisSobreYasis * 1.25,
+      child: ListView(
+        padding: EdgeInsets.only(bottom: _sizeUtils.xasisSobreYasis * 0.03),
+        children: [
+          HeaderBar(),
+          _crearBodyComponents()
+        ],
+      ),
+    );
+  }
+
+  Widget _crearBodyComponents(){
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: _sizeUtils.xasisSobreYasis * 0.03),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
+          _crearTitulo(),
+          SizedBox(height: _sizeUtils.littleSizedBoxHeigh),
+          _createInputTipoSolicitud(),
+          SizedBox(height: _sizeUtils.littleSizedBoxHeigh),
+          _createButtonConocerDatosEntidadDestino(),
+          SizedBox(height: _sizeUtils.littleSizedBoxHeigh),
+          _createComponentNombreCaso(),
+          SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
+          _createComponentDescripcionCaso(),
+          SizedBox(height: _sizeUtils.littleSizedBoxHeigh),
+          _createComponentDireccion(),
+          SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
+          _crearGoogleMapsComponent(),
+          SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
+          _crearBotonAdjuntar(),
+          SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
+          _crearBotonSubmit()
+        ],
+      ),
+    );
+  }
+
+  Widget _crearTitulo(){
+    
+    return Center(
+      child: Text(
+        _widgetTitle,
+        style: TextStyle(
+          fontSize: _sizeUtils.titleSize,
+          color: Colors.black54
+        ),
+      ),
+    );
+  }
+
+  void _initValoresDependientesDeTipoWidget(){
+    switch(widget._tipoWidgetCasoForm){
+      case TipoWidgetCasoForm.CREAR:
+        _widgetTitle = 'CREAR UN CASO';
+        _submitNavigationRoute = AperturaExitosaDeCasoPage.route;
+      break;
+      case TipoWidgetCasoForm.EDITAR:
+        _widgetTitle = 'EDITAR CASO';
+        _submitNavigationRoute = CasosHomePage.route;
+      break;
+      case TipoWidgetCasoForm.APORTAR:
+        _widgetTitle = 'APORTAR AL CASO';
+        _submitNavigationRoute = CasosHomePage.route;
+      break;
+    }
+  }
+
+  Widget _createInputTipoSolicitud(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _createLabel('Tipo de solicitud'),
+        _createDropdown()
+      ],
+    );
+  }
+
+  Widget _createDropdown(){
+    List<DropdownMenuItem<String>> items = _crearTipoDeSolicitudItems();
+    return DropdownButton<String>(
+      value: _tipoDeSolicitud,
+      items: items,
+      onChanged: (String newValue){
+        _tipoDeSolicitud = newValue;
+        setState(() {
+          
+        });
+      },
+    );
+  }
+
+  List<DropdownMenuItem<String>> _crearTipoDeSolicitudItems(){
+    List<DropdownMenuItem<String>> items = [];
+    strings.tiposDeSolicitud.forEach((String currentTipo) {
+      final DropdownMenuItem<String> item = DropdownMenuItem<String>(
+        value: currentTipo,
+        child: Container(
+          child: Text(currentTipo),
+        ),
+      );
+      items.add(item);
+    });
+    return items;
+  }
+
+  Widget _createButtonConocerDatosEntidadDestino(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _createLabel('Conoce los datos de la entidad destino'),
+        _crearOpcionesButton()
+      ],
+    );
+  }
+
+  Widget _crearOpcionesButton(){
+    return Container(
+      width: _sizeUtils.xasisSobreYasis * 0.14,
+      height: _sizeUtils.xasisSobreYasis * 0.07,
+      decoration: _createOpcionesButtonDecoration(),
+      child: Row(
+        children: [
+          _crearToggleButtonsItem('Sí', 0),
+          _crearToggleButtonsItem('No', 1)
+        ],
+      ),
+    );
+  }
+
+  BoxDecoration _createOpcionesButtonDecoration(){
+    return BoxDecoration(
+      color: Colors.grey[300],
+      borderRadius: BorderRadius.circular(_sizeUtils.xasisSobreYasis * 0.07)
+    );
+  }
+
+  Widget _crearToggleButtonsItem(String text, int indexButton){
+    return GestureDetector(
+      child: Container(
+        width: _sizeUtils.xasisSobreYasis * 0.07,
+        height: _sizeUtils.xasisSobreYasis * 0.07,
+        decoration: _createToggleButtonsItemDecoration(indexButton),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: Colors.black
+            ),
+          )
+        ),
+      ),
+      onTap: (){
+        _selectedConoceDatosEntidadDestinoElements[(indexButton-1)%2] = false;
+        _selectedConoceDatosEntidadDestinoElements[indexButton] = true;
+        setState(() {
+          
+        });
+      },
+    );
+  }
+
+  BoxDecoration _createToggleButtonsItemDecoration(int indexButton){
+    final Color itemColor = (_selectedConoceDatosEntidadDestinoElements[indexButton])? Colors.green[600] : Colors.grey[300];
+    return BoxDecoration(
+      color: itemColor,
+      borderRadius: BorderRadius.circular(_sizeUtils.xasisSobreYasis * 0.1)
+    );
+  }
+
+  Widget _createComponentNombreCaso(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        _createLabel('Nombre del caso'),
+        _createInputNombreCaso()
+      ],
+    );
+  }
+
+  Widget _createInputNombreCaso(){
+    return Container(
+      width: _sizeUtils.xasisSobreYasis * 0.25,
+      child: TextFormField(
+        initialValue: _nombreCaso,
+        onChanged: (String newValue){
+          _nombreCaso = newValue;
+        },
+      ),
+    );
+  }
+
+  Widget _createComponentDescripcionCaso(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _createWithOutWidthLabel('Descripción'),
+        _createInputDescripcionCaso()
+      ],
+    );
+  }
+
+  Widget _createInputDescripcionCaso(){
+    return Container(
+      height: _sizeUtils.xasisSobreYasis * 0.35,
+      child: TextFormField(
+        initialValue: _descripcionCaso,
+        maxLines: 15,
+        maxLength: 300,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.grey[250],
+          border: _crearDescripcionInputBorder(),
+          enabledBorder: _crearDescripcionInputBorder(),
+          focusedBorder: _crearDescripcionInputBorder()
+        ),
+      ),
+    );
+  }
+
+  InputBorder _crearDescripcionInputBorder(){
+    return OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Colors.white
+      )
+    );
+  }
+
+  Widget _createComponentDireccion(){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        _createLabel('Dirección'),
+        _crearInputDireccion()
+      ],
+    );
+  }
+
+  Widget _crearInputDireccion(){
+    return Container(
+      width: _sizeUtils.xasisSobreYasis * 0.25,
+      child: TextFormField(
+        initialValue: _direccion,
+        onChanged: (String newValue){
+          _direccion = newValue;
+        },
+      ),
+    );
+  }
+
+  Widget _createLabel(String text){
+    return Container(
+      width: _sizeUtils.xasisSobreYasis * 0.3,
+      child: Text(
+        text,
+        maxLines: 2,
+        style: TextStyle(
+          fontSize: _sizeUtils.littleLabelTextSize
+        ),
+      ),
+    );
+  }
+
+  Widget _crearGoogleMapsComponent(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _createWithOutWidthLabel('Localización'),
+        SizedBox(height: _sizeUtils.littleSizedBoxHeigh),
+        _crearGoogleMaps()
+      ],
+    );
+  }
+
+  Widget _createWithOutWidthLabel(String texto){
+    return Text(
+      texto,
+      maxLines: 2,
+      style: TextStyle(
+        fontSize: _sizeUtils.littleLabelTextSize
+      ),
+    );
+  }
+
+  Widget _crearGoogleMaps(){
+    return GoogleMapsComponent(
+      heightPercentage: 0.6,
+      widthPercentage: 0.65,
+    );
+    /*
+    return Container(
+      height: _sizeUtils.xasisSobreYasis * 0.4,
+      width: _sizeUtils.xasisSobreYasis * 0.7,
+      decoration: BoxDecoration(
+        color: Colors.blueGrey[200]
+      ),
+      child: Center(
+        child: Text('Mapa'),
+      ),
+    );
+    */
+  }
+
+  Widget _crearBotonAdjuntar(){
+    return Container(
+      width: _sizeUtils.xasisSobreYasis * 0.38,
+      child: MaterialButton(
+        elevation: 0,
+        padding: _createBotonAdjuntarPadding(),
+        color: Colors.grey.withOpacity(0.4),
+        
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _createBotonAdjuntarIcon(),
+            _createBotonAdjuntarText()
+          ],
+        ),
+        onPressed: (){
+
+        },
+      ),
+    );
+  }
+
+  EdgeInsets _createBotonAdjuntarPadding(){
+    return EdgeInsets.symmetric(
+      vertical: _sizeUtils.xasisSobreYasis * 0.005,
+      horizontal: _sizeUtils.xasisSobreYasis * 0.005
+    );
+  }
+
+  Widget _createBotonAdjuntarIcon(){
+    return Container(
+      padding: EdgeInsets.all(_sizeUtils.xasisSobreYasis * 0.005),
+      decoration: BoxDecoration(
+        color: Colors.grey[700],
+        borderRadius: BorderRadius.circular(_sizeUtils.xasisSobreYasis * 0.1)
+      ),
+      child: Icon(
+        Icons.camera_alt,
+        color: Colors.white,
+      ),
+    );
+  }
+
+  Widget _createBotonAdjuntarText(){
+    return Text(
+      'Agregar imágenes/vídeos',
+      style: TextStyle(
+        color: Colors.black.withOpacity(0.75),
+        fontSize: _sizeUtils.xasisSobreYasis * 0.025
+      ),
+    );
+  }
+
+  Widget _crearBotonSubmit(){
+    final Map<String, double> padding = _sizeUtils.largeFlatButtonPadding;
+    return MaterialButton(
+      color: Theme.of(context).primaryColor,
+      padding: EdgeInsets.symmetric(horizontal: padding['horizontal']),
+      shape: StadiumBorder(),
+      child: Text(
+        'GUARDAR',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: _sizeUtils.xasisSobreYasis * 0.025
+        ),
+      ),
+      onPressed: (){
+        Navigator.of(context).pushReplacementNamed(_submitNavigationRoute);
+      },
+    );
+  }
+
+  void _definirRutaSegunTipoDeWidget(){
+    
+  }
+  
+}

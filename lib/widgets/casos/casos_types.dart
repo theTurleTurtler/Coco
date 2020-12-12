@@ -1,0 +1,4 @@
+enum CasosTypes{
+  Abierto,
+  RequerimientosEnviados
+}

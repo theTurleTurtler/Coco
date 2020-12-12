@@ -1,5 +1,8 @@
-import 'package:coco/utils/size_utils.dart';
+import 'package:coco/pages/casos_home_page.dart';
+import 'package:coco/pages/register_dashboard_page.dart';
+import 'package:coco/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:coco/utils/size_utils.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginPage extends StatelessWidget {
@@ -12,7 +15,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     _initInitialConfiguration(context);
     return Scaffold(
-      backgroundColor: Colors.blueGrey[50],
+      backgroundColor: Theme.of(context).backgroundColor,
       body: SingleChildScrollView(
         child: _crearComponentes()
       )
@@ -35,106 +38,180 @@ class LoginPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.2),
-            _crearTextoIngresoExterno(),
-            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.022),
-            _crearFacebookButton(),
-            SizedBox(height: _sizeUtils.littleSizedBoxHeigh),
-            _crearGoogleButton(),
-            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.12),
-            _crearEmailInput(),
+            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.05),
+            HeaderLogo(),  
+            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.05),
+            _crearFormInput('email'),
+            SizedBox(height: _sizeUtils.normalSizedBoxHeigh * 0.75),
+            _crearFormInput('password'),
             SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
-            _crearPasswordInput(),
-            SizedBox(height: _sizeUtils.largeSizedBoxHeigh),
-            _crearBotonSubmit()
+            _crearBotonLogin(),
+            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.022),
+            _crearBotonRegister(),
+            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.065),
+            _crearComponentesIngresoExterno(),
           ],
         ),
       ),
     );
   }
 
-  Widget _crearTextoIngresoExterno(){
-    return Center(
+  Widget _crearFormInput(String tipo){
+    final Widget input = _generarInputSegunTipo(tipo);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _crearFormInputTitle(tipo),
+        SizedBox(height: _sizeUtils.littleSizedBoxHeigh * 0.5),
+        input
+      ],
+    );
+  }
+
+  Widget _crearFormInputTitle(String tipoInput){
+    final String title = _elegirTituloDeInput(tipoInput);
+    return Container(
+      padding: EdgeInsets.only(left: _sizeUtils.xasisSobreYasis * 0.03),
       child: Text(
-        'Ingresa con',
-        textAlign: TextAlign.justify,
+        title,
         style: TextStyle(
-          fontSize: _sizeUtils.subtitleSize
+          fontSize: _sizeUtils.subtitleSize,
+          color: Colors.black54
         ),
       ),
     );
   }
 
-  Widget _crearFacebookButton(){
-    final Map<String, dynamic> padding = _sizeUtils.largeIconButtonPadding;
-    return MaterialButton(
-      padding: EdgeInsets.symmetric(horizontal: padding['horizontal'], vertical: padding['vertical']),
-      shape: StadiumBorder(),
-      color: Colors.black87,
-      child: Icon(
-        FontAwesomeIcons.facebook,
-        //color: Color.fromRGBO(66,103,178, 1)
-        color: Colors.white,
-      ),
-      onPressed: (){
-
-      },
-    );
+  String _elegirTituloDeInput(String tipoInput){
+    if(tipoInput == 'email')
+      return "CORREO";
+    else
+      return 'CONTRASEÑA';
   }
 
-  Widget _crearGoogleButton(){
-    final Map<String, dynamic> padding = _sizeUtils.largeIconButtonPadding;
-    return MaterialButton(
-      padding: EdgeInsets.symmetric(horizontal: padding['horizontal'], vertical: padding['vertical']),
-      shape: StadiumBorder(),
-      color: Colors.black87,
-      child: Icon(
-        FontAwesomeIcons.google,
-        //color: Color.fromRGBO(219,68,55, 1),
-        color: Colors.white,
-      ),
-      onPressed: (){
-
-      },
-    );
+  Widget _generarInputSegunTipo(String tipo){
+    Widget input;
+    if(tipo == 'email'){
+      input = _crearEmailInput();
+    }else{
+      input = _crearPasswordInput();
+    }
+    return input;
   }
 
   Widget _crearEmailInput(){
     return TextField(
       keyboardType: TextInputType.emailAddress,
+      cursorColor: Colors.black,
+      textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
-        labelText: 'Correo electrónico',
-      ),
+        isCollapsed: true,
+        prefixIcon: Icon(
+          Icons.person_outline,
+          size: _sizeUtils.normalIconSize,
+        ),
+        enabledBorder: _crearLoginInputBorder(),
+        border: _crearLoginInputBorder(),
+      )
     );
   }
 
   Widget _crearPasswordInput(){
     return TextField(
-      keyboardType: TextInputType.emailAddress,
+      keyboardType: TextInputType.text,
       obscureText: true,
       cursorColor: Colors.black,
+      textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
-        labelText: 'Contraseña',
-      ),
+        isCollapsed: true,
+        prefixIcon: Icon(
+          //FontAwesomeIcons.lock
+          Icons.lock_outline,
+          size: _sizeUtils.normalIconSize,
+        ),
+        border: _crearLoginInputBorder(),
+        enabledBorder: _crearLoginInputBorder()
+      )
     );
   }
 
-  Widget _crearBotonSubmit(){
-    final double largeFlatButtonPadding = _sizeUtils.largeFlatButtonPadding['horizontal'];
+  InputBorder _crearLoginInputBorder(){
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(_sizeUtils.xasisSobreYasis * 0.065),
+      borderSide: BorderSide(
+        color: Colors.black,
+        width: 1.75
+      )
+    );
+  }
+
+  Widget _crearBotonLogin(){
+    final Map<String, double> fatLargeFlatButtonPadding = _sizeUtils.fatLargeFlatButtonPadding;
+    final double horizontalPadding = fatLargeFlatButtonPadding['horizontal'];
+    final double verticalPadding = fatLargeFlatButtonPadding['vertical'];
     return MaterialButton(
-      child: Text(
-        'Ingresa',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: _sizeUtils.flatButtonTextSize
-        ),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: largeFlatButtonPadding),
+      child: _crearTextoDeBoton('INGRESO'),
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
       shape: StadiumBorder(),
-      color: Colors.black87,
+      color: Theme.of(_context).primaryColor,
       onPressed: (){
+        Navigator.of(_context).pushReplacementNamed(CasosHomePage.route);
       },
     );
   }
 
+  Widget _crearBotonRegister(){
+    final Map<String, double> fatLargeFlatButtonPadding = _sizeUtils.fatLargeFlatButtonPadding;
+    final double horizontalPadding = fatLargeFlatButtonPadding['horizontal'];
+    final double verticalPadding = fatLargeFlatButtonPadding['vertical'];
+    return MaterialButton(
+      child: _crearTextoDeBoton('REGISTRO'),
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
+      shape: StadiumBorder(),
+      color: Theme.of(_context).primaryColor,
+      onPressed: (){
+        Navigator.of(_context).pushNamed(RegisterDashBoardPage.route);
+      },
+    );
+  }
+
+  Widget _crearTextoDeBoton(String texto){
+    return Text(
+      texto,
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: _sizeUtils.littleTitleSize
+      ),
+    );
+  }
+
+  Widget _crearComponentesIngresoExterno(){
+    return Column(
+      children: [
+        _crearTextoIngresoExterno(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            //TODO: Implementar las verdaderas rutas de navegación
+            PreIngresoIconButton.facebook(LoginPage.route),
+            PreIngresoIconButton.google(LoginPage.route)
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget _crearTextoIngresoExterno(){
+    return Center(
+      child: Text(
+        'O INGRESA CON',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: _sizeUtils.subtitleSize,
+          color: Colors.black54
+        ),
+      ),
+    );
+  }
+  
 }

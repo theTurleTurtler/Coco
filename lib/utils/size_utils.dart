@@ -16,12 +16,25 @@ class SizeUtils{
   }
   double get xasisSobreYasis => _xasisYasisProm;
 
+  Map<String, double> get headerLeftComponentPadding{
+    return {
+      'top': xasisSobreYasis * 0.015,
+      'bottom': xasisSobreYasis * 0.015,
+      'left': xasisSobreYasis * 0.04,
+      'right': xasisSobreYasis * 0.025
+    };
+  }
+
   double get littleHorizontalScaffoldPadding{
     return _xasisYasisProm * 0.045;
   }
 
-  double get largeHorizontalScaffoldPadding{
+  double get normalHorizontalScaffoldPadding{
     return _xasisYasisProm * 0.09;
+  }
+
+  double get largeHorizontalScaffoldPadding{
+    return _xasisYasisProm * 0.13;
   }
 
   /**
@@ -29,6 +42,10 @@ class SizeUtils{
    */
   double get normalMainListviewContainerHeight{
     return _xasisYasisProm;
+  }
+
+  double get superTitleSize{
+    return _xasisYasisProm * 0.05;
   }
 
   double get titleSize{
@@ -55,18 +72,30 @@ class SizeUtils{
     return _xasisYasisProm * 0.0345;
   }
 
+  double get littleLabelTextSize{
+    return _xasisYasisProm * 0.03;
+  }
+
+  double get littleIconSize{
+    return _xasisYasisProm * 0.045;
+  }
+
   double get normalIconSize{
-    return _xasisYasisProm * 0.05;
+    return _xasisYasisProm * 0.055;
   }
 
   double get largeIconSize{
     return _xasisYasisProm * 0.065;
   }
 
+  double get extraLargeIconSize{
+    return _xasisYasisProm * 0.08;
+  }
+
   double get flatButtonTextSize{
     return _xasisYasisProm * 0.03;
   }
-
+  
   Map<String, double> get largeFlatButtonPadding{
     return {
       'vertical':_xasisYasisProm * 0.003,
@@ -74,10 +103,24 @@ class SizeUtils{
     };
   }
 
+  Map<String, double> get fatLargeFlatButtonPadding{
+    return {
+      'vertical':_xasisYasisProm * 0.0175,
+      'horizontal':_xasisYasisProm * 0.09
+    };
+  }
+
   Map<String, double> get shortFlatButtonPadding{
     return {
       'vertical':_xasisYasisProm * 0.003,
       'horizontal':_xasisYasisProm * 0.045
+    };
+  }
+
+  Map<String, double> get circleButtonPadding{
+    return {
+      'vertical':_xasisYasisProm * 0.015,
+      'horizontal':_xasisYasisProm * 0.015
     };
   }
 
@@ -103,7 +146,7 @@ class SizeUtils{
   }
 
   double get veryMuchLittleSizedBoxHeigh{
-    return _xasisYasisProm * 0.08;
+    return _xasisYasisProm * 0.008;
   }
 
   double get littleSizedBoxHeigh{
@@ -119,7 +162,11 @@ class SizeUtils{
   }
 
   double get veryMuchLargeSizedBoxHeigh{
-    return _xasisYasisProm * 0.18;
+    return _xasisYasisProm * 0.12;
+  }
+
+  double get giantSizedBoxHeight{
+    return _xasisYasisProm * 0.23;
   }
 
   double get selectableCircleRadius{
@@ -141,6 +188,24 @@ class SizeUtils{
       
     };
   }
+
+  Map<String, double> get littleMainLogoSize{
+    return {
+      'vertical':_xasisYasisProm * 0.35,
+      'horizontal':_xasisYasisProm * 0.38
+      
+    };
+  }
+
+  Map<String, double> get diminuteLogoSize{
+    return {
+      'vertical':_xasisYasisProm * 0.09,
+      'horizontal':_xasisYasisProm * 0.1
+      
+    };
+  }
+
+  
 
   double get normalMainMenuPopUpMenuItemHeigh{
     return _xasisYasisProm * 0.09;

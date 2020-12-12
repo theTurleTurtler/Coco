@@ -1,0 +1,4 @@
+enum TiposDePageCasosList{
+  CASOS_ABIERTOS,
+  CASOS_REQUERIMIENTOS_ENVIADOS
+}
