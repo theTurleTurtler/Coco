@@ -1,3 +1,4 @@
+import 'package:coco/blocs/map/map_bloc.dart';
 import 'package:coco/enums/tipo_widget_caso_form.dart';
 import 'package:coco/models/caso.dart';
 import 'package:coco/pages/apertura_exitosa_de_caso_page.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:coco/utils/size_utils.dart';
 import 'package:coco/widgets/header_bar/header_bar.dart';
 import 'package:coco/utils/strings_utils.dart' as strings;
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 /**
  * Tiene tres constructores debido a que se deben implementar tres vistas
@@ -358,8 +360,15 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
         onChanged: (String newValue){
           _direccion = newValue;
         },
+        onEditingComplete: _onInputDirectionEditingComplete,
       ),
     );
+  }
+
+  void _onInputDirectionEditingComplete(){
+    final MapBloc mapaBloc = BlocProvider.of<MapBloc>(context);
+    final UpdatePositionFromStringDirection event = UpdatePositionFromStringDirection(direction: _direccion);
+    mapaBloc.add(event);
   }
 
   Widget _createLabel(String text){

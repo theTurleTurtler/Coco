@@ -1,5 +1,8 @@
+import 'package:coco/blocs/map/map_bloc.dart';
 import 'package:coco/utils/size_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 class GoogleMapsComponent extends StatefulWidget {
 
   final double widthPercentage;
@@ -15,7 +18,7 @@ class GoogleMapsComponent extends StatefulWidget {
 }
 
 class _GoogleMapsComponentState extends State<GoogleMapsComponent> {
-  //test: 4.274903159597256, -74.81690691028598
+
   BuildContext _context;
   SizeUtils _sizeUtils;
   
@@ -26,8 +29,13 @@ class _GoogleMapsComponentState extends State<GoogleMapsComponent> {
       height: _sizeUtils.xasisSobreYasis * widget.heightPercentage,
       width: _sizeUtils.xasisSobreYasis * widget.widthPercentage,
       decoration: _createMapBoxDecoration(),
-      child: Center(
-        child: Text('Google Maps'),
+      child: BlocBuilder<MapBloc, MapState>(
+        builder: (_, MapState state){
+          if(state.currentPosition != null)
+            return _createGoogleMapsComponent(state);
+          else
+            return Container();
+        },
       ),
     );
   }
@@ -41,6 +49,16 @@ class _GoogleMapsComponentState extends State<GoogleMapsComponent> {
     return BoxDecoration(
       color: Theme.of(_context).primaryColor,
       borderRadius: BorderRadius.circular(_sizeUtils.xasisSobreYasis * 0.0075)
+    );
+  }
+
+  Widget _createGoogleMapsComponent(MapState state){
+    final LatLng initialTestPosition = state.currentPosition;
+    return GoogleMap(
+      initialCameraPosition: CameraPosition(
+        target: initialTestPosition,
+        zoom: 15.0,
+      ),
     );
   }
 }
