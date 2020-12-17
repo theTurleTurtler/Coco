@@ -1,0 +1,5 @@
+enum AccountStep{
+  UNLOGGED,
+  WITH_ACCESS_TOKEN,
+  LOGGED
+}

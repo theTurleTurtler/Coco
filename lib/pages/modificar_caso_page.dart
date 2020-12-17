@@ -366,9 +366,11 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
   }
 
   void _onInputDirectionEditingComplete(){
-    final MapBloc mapaBloc = BlocProvider.of<MapBloc>(context);
-    final UpdatePositionFromStringDirection event = UpdatePositionFromStringDirection(direction: _direccion);
-    mapaBloc.add(event);
+    if(widget._tipoWidgetCasoForm == TipoWidgetCasoForm.CREAR){
+      final MapBloc mapaBloc = BlocProvider.of<MapBloc>(context);
+      final UpdatePositionFromStringDirection event = UpdatePositionFromStringDirection(direction: _direccion);
+      mapaBloc.add(event);
+    }
   }
 
   Widget _createLabel(String text){

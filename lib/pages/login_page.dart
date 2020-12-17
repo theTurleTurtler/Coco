@@ -1,15 +1,19 @@
-import 'package:coco/pages/casos_home_page.dart';
+import 'package:flutter/material.dart';
+import 'package:coco/errors/services/service_status_err.dart';
 import 'package:coco/pages/register_dashboard_page.dart';
 import 'package:coco/widgets/common_widgets.dart';
-import 'package:flutter/material.dart';
 import 'package:coco/utils/size_utils.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:coco/utils/services_managers/user_service_manager.dart' as userServiceManager;
 
+// ignore: must_be_immutable
 class LoginPage extends StatelessWidget {
   static final route = 'login';
 
   BuildContext _context;
   SizeUtils _sizeUtils;
+
+  String _email = '';
+  String _password = '';
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +116,10 @@ class LoginPage extends StatelessWidget {
         ),
         enabledBorder: _crearLoginInputBorder(),
         border: _crearLoginInputBorder(),
-      )
+      ),
+      onChanged: (String newValue){
+        _email = newValue;
+      }
     );
   }
 
@@ -131,7 +138,10 @@ class LoginPage extends StatelessWidget {
         ),
         border: _crearLoginInputBorder(),
         enabledBorder: _crearLoginInputBorder()
-      )
+      ),
+      onChanged: (String newValue){
+        _password = newValue;
+      }
     );
   }
 
@@ -154,10 +164,19 @@ class LoginPage extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
       shape: StadiumBorder(),
       color: Theme.of(_context).primaryColor,
-      onPressed: (){
-        Navigator.of(_context).pushReplacementNamed(CasosHomePage.route);
-      },
+      onPressed: _login,
     );
+  }
+
+  void _login(){
+    try{
+      userServiceManager.manageLoginProccess(_context, _email, _password);
+    }on ServiceStatusErr catch(err){
+      print('on service status error: ${err.message}');
+      print(err.extraInformation);
+    }catch(err){
+      print('on error: ${err.toString()}');
+    }
   }
 
   Widget _crearBotonRegister(){
