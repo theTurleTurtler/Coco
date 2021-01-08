@@ -1,6 +1,7 @@
 import 'package:coco/errors/services/service_status_err.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:coco/services/user_service.dart';
+import '../../testing_helpers.dart' as helpers;
 
 final String _successfulRegisterDescription = 'Se intenta registrar a un nuevo usuario de manera satisfactoria. Como response se retorna un status y un token existente';
 final String _failedRegisterDescription = 'Se intenta registrar un usuario ya existente, de modo que se retornará un error.';
@@ -55,7 +56,7 @@ Future<void> _testSuccessfulRegister()async{
   test(_successfulRegisterDescription, ()async{
     try{
       await _executeSuccessRegisterValidations();
-    }on TestFailure catch(err){
+    }on TestFailure catch(_){
 
     }on ServiceStatusErr catch(err){
       fail('succesfulRegister: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
@@ -85,7 +86,7 @@ Future<void> _testFailedRegister()async{
     try{
       await _executeFailedByExistingEmailRegisterValidations();
       fail('failedRegister: Debería haberse generado un ServiceStatusErr');
-    }on TestFailure catch(err){
+    }on TestFailure catch(_){
 
     }on ServiceStatusErr catch(err){
       if(err.status != 422)
@@ -120,7 +121,7 @@ Future<void> _testSuccessfulLogin()async{
   test(_successfulLoginDescription, ()async{
     try{
       await _executeSuccessfulLoginValidations();
-    }on TestFailure catch(err){
+    }on TestFailure catch(_){
 
     }on ServiceStatusErr catch(_){
       fail('sucessfulLogin: No debería ocurrir un ServiceStatusErr. Los datos del login están bien');
@@ -143,17 +144,6 @@ Future<void> _executeSuccessfulLoginValidations()async{
 
 }
 
-Future<void> _executeSuccessfulGetUserInformationValidations()async{
-  Map<String, dynamic> bodyData = {'token':_successAccessToken};
-  Map<String, dynamic> response = await userService.getUserInformation(bodyData);
-  _executeSuccessfulTestValidations(response);
-  final Map<String, dynamic> userInformation = response['data']['original'];
-  expect(userInformation, isNotNull, reason: 'La información de usuario debe existir en el response');
-  expect(userInformation['id'], isNotNull, reason: 'El id del usuario debe venir en su información');
-  expect(userInformation['name'], isNotNull, reason: 'El name del usuario debe venir en su información');
-  expect(userInformation['email'], isNotNull, reason: 'El email del usuario debe venir en su información');
-}
-
 Future<void> _executeSucceRefreshTokenValidations()async{
   Map<String, dynamic> bodyData = {'token':_successAccessToken};
   Map<String, dynamic> response = await userService.refreshAccessToken(bodyData);
@@ -167,7 +157,7 @@ Future<void> _testSuccessfulLogout()async{
   test(_successfulLogoutDescription, ()async{
     try{
       await _executeSuccessfulLogoutValidations();
-    }on TestFailure catch(err){
+    }on TestFailure catch(_){
 
     }on ServiceStatusErr catch(_){
       fail('successfulLogout: No debería ocurrir un ServiceStatusErr. Los datos del login están bien');
@@ -201,7 +191,7 @@ Future<void> _testFailedLogin()async{
     try{
       await _executeFailedLoginValidations();
       fail('failedLogin: la ejecución debería haber parado debido al ServiceStatusErr.');
-    }on TestFailure catch(err){
+    }on TestFailure catch(_){
 
     }on ServiceStatusErr catch(err){
       if(err.status != 401)
@@ -224,7 +214,7 @@ Future<void> _testSuccessfulGetUserInformation()async{
   test(_successfulGetUserInformationDescription, ()async{
     try{
       await _executeSuccessfulGetUserInformationValidations();
-    }on TestFailure catch(err){
+    }on TestFailure catch(_){
 
     }on ServiceStatusErr catch(err){
       fail('successfulGetUserInformation: No debería ocurrir un ServiceStatusErr: ${err.message}');
@@ -234,12 +224,24 @@ Future<void> _testSuccessfulGetUserInformation()async{
   });
 }
 
+Future<void> _executeSuccessfulGetUserInformationValidations()async{
+  Map<String, dynamic> bodyData = {'token':_successAccessToken};
+  Map<String, dynamic> response = await userService.getUserInformation(bodyData);
+  _executeSuccessfulTestValidations(response);
+  final Map<String, dynamic> userInformation = response['data']['original'];
+  expect(userInformation, isNotNull, reason: 'La información de usuario debe existir en el response');
+  expect(userInformation['id'], isNotNull, reason: 'El id del usuario debe venir en su información');
+  expect(userInformation['name'], isNotNull, reason: 'El name del usuario debe venir en su información');
+  expect(userInformation['nick'], isNotNull, reason: 'El nick del usuario debe venir en su información');
+  expect(userInformation['email'], isNotNull, reason: 'El email del usuario debe venir en su información');
+}
+
 Future<void> _testFailedGetUserInformation()async{
   test(_failedGetUserInformationDescription, ()async{
     try{
       await _executeFailedGetUserInformationValidations();
       fail('failedGetUserInformation: la ejecución debería haber parado debido al ServiceStatusErr.');
-    }on TestFailure catch(err){
+    }on TestFailure catch(_){
 
     }on ServiceStatusErr catch(err){
       if(err.status != 401)
@@ -259,7 +261,7 @@ Future<void> _testSuccessfulRefreshToken()async{
   test(_successfulRefreshTokenDescription, ()async{
     try{
       await _executeSucceRefreshTokenValidations();
-    }on TestFailure catch(err){
+    }on TestFailure catch(_){
 
     }on ServiceStatusErr catch(_){
       fail('successfulRefreshToken: No debería ocurrir un ServiceStatusErr.');
@@ -274,7 +276,7 @@ Future<void> _testFailedRefreshToken()async{
     try{
       await _executeFailedRefreshTokenValidations();
       fail('failedRefreshToken: la ejecución debería haber parado debido al ServiceStatusErr.');
-    }on TestFailure catch(err){
+    }on TestFailure catch(_){
 
     }on ServiceStatusErr catch(err){
       if(err.status != 401)
@@ -295,7 +297,7 @@ Future<void> _testFailedLogout()async{
     try{
       await _executeFailedLogoutValidations();
       fail('failedLogout: la ejecución debería haber parado debido al ServiceStatusErr.');
-    }on TestFailure catch(err){
+    }on TestFailure catch(_){
 
     }on ServiceStatusErr catch(err){
       if(err.status != 401)
@@ -312,17 +314,11 @@ Future<void> _executeFailedLogoutValidations()async{
 }
 
 String _createUniqueEmail(){
-  final String email = 'email_${_createUniqueString()}@gmail.com';
+  final String email = 'email_${helpers.createUniqueString()}@gmail.com';
   return email;
 }
 
 String _createUniqueName(){
-  final String name = 'John ${_createUniqueString()}';
+  final String name = 'John ${helpers.createUniqueString()}';
   return name;
-}
-
-String _createUniqueString(){
-  final DateTime nowDate = DateTime.now();
-  final String uniqueString = '${nowDate.year}${nowDate.month}${nowDate.day}${nowDate.hour}${nowDate.minute}${nowDate.second}';
-  return uniqueString;
 }

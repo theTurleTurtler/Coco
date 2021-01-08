@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:coco/enums/account_step.dart';
 import 'package:coco/models/user.dart';
@@ -21,12 +20,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   ) async* {
     // TODO: implement mapEventToState
     switch(event.runtimeType){
-      case AddAccessToken:
-        _addAccessToken(event as AddAccessToken);
+      case SetAccessToken:
+        _addAccessToken(event as SetAccessToken);
         yield _currentNewState;
       break;
-      case AddUserInformation:
-        _addUserInformation(event as AddUserInformation);
+      case SetUserInformation:
+        _addUserInformation(event as SetUserInformation);
         yield _currentNewState;
       break;
       case ResetUserInformation:
@@ -36,14 +35,14 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
   }
 
-  void _addAccessToken(AddAccessToken event){
+  void _addAccessToken(SetAccessToken event){
     _currentNewState = state.copyWith(
       accountStep: AccountStep.WITH_ACCESS_TOKEN,
       accessToken: event.accessToken
     );
   }
 
-  void _addUserInformation(AddUserInformation event){
+  void _addUserInformation(SetUserInformation event){
     _currentNewState = state.copyWith(
       accountStep: AccountStep.LOGGED,
       user: event.user

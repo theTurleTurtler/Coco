@@ -26,4 +26,6 @@ class UserState {
     accessToken: accessToken??this.accessToken,
     user: user??this.user
   );
+
+  UserState reset() => UserState();
 }

@@ -54,7 +54,7 @@ Future<String> _register(UserBloc userBloc, Map<String, dynamic> registerInforma
 
 String _addAccessTokenFromResponse(UserBloc userBloc, Map<String, dynamic> response){
   final String accessToken = response['data']['original']['access_token'];
-  final UserEvent addAccessTokenEvent = AddAccessToken(accessToken: accessToken);
+  final UserEvent addAccessTokenEvent = SetAccessToken(accessToken: accessToken);
   userBloc.add(addAccessTokenEvent);
   return accessToken;
 }
@@ -64,7 +64,7 @@ Future<void> _addUserInformation(UserBloc userBloc, String accessToken)async{
   final Map<String, dynamic> response = await userService.getUserInformation(bodyData);
   final Map<String, dynamic> userInformation = response['data']['original'];
   final User user = User.fromJson(userInformation);
-  final UserEvent addUserInformationEvent = AddUserInformation(user: user);
+  final UserEvent addUserInformationEvent = SetUserInformation(user: user);
   userBloc.add(addUserInformationEvent);
 }
 

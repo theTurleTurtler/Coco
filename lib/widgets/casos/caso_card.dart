@@ -161,7 +161,7 @@ class CasoCard extends StatelessWidget {
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: double.infinity),
         child: Text(
-          _caso.nombre,
+          _caso.titulo,
           style: TextStyle(
             fontSize: _sizeUtils.normalTextSize,
             fontWeight: FontWeight.normal,

@@ -47,7 +47,7 @@ class CasoDetailPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _crearNombre(),
+          _crearTitulo(),
           SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
           _crearCiudad(),
           SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
@@ -67,9 +67,9 @@ class CasoDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _crearNombre(){
+  Widget _crearTitulo(){
     return Text(
-      _caso.nombre,
+      _caso.titulo,
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: _sizeUtils.subtitleSize,

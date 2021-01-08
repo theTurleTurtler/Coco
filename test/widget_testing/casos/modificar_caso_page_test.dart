@@ -1,12 +1,11 @@
 import 'package:coco/models/caso.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:coco/pages/modificar_caso_page.dart';
 
 final String _editarCasoPageDescription = 'Se testea el widget de editar caso.';
 final Caso _testingCaso = Caso(
-  nombre: 'Caso x',
+  titulo: 'Caso x',
   descripcion: 'Descripción del caso x',
   tipoDeSolicitud: 'Denuncia',
   conoceDatosDeEntidadDestino: false,

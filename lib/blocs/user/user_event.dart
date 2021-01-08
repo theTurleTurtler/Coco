@@ -3,18 +3,18 @@ part of 'user_bloc.dart';
 @immutable
 abstract class UserEvent {}
 
-class AddAccessToken extends UserEvent{
+class SetAccessToken extends UserEvent{
   final String accessToken;
 
-  AddAccessToken({
+  SetAccessToken({
     @required this.accessToken
   });
 }
 
-class AddUserInformation extends UserEvent{
+class SetUserInformation extends UserEvent{
   final User user;
 
-  AddUserInformation({
+  SetUserInformation({
     @required this.user
   });
 }

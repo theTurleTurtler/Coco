@@ -61,7 +61,7 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
     true,
     false
   ];
-  String _nombreCaso = '';
+  String _tituloCaso = '';
   String _descripcionCaso = '';
   String _direccion = '';
 
@@ -98,7 +98,7 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
   void _initInitialInputValues(){
     _tipoDeSolicitud = widget.caso.tipoDeSolicitud;
     _initInitialToggleElements();
-    _nombreCaso = widget.caso.nombre;
+    _tituloCaso = widget.caso.titulo;
     _descripcionCaso = widget.caso.descripcion;
     _direccion = widget.caso.direccion;
     //TODO: Implementar el resto de elementos
@@ -301,9 +301,9 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
     return Container(
       width: _sizeUtils.xasisSobreYasis * 0.25,
       child: TextFormField(
-        initialValue: _nombreCaso,
+        initialValue: _tituloCaso,
         onChanged: (String newValue){
-          _nombreCaso = newValue;
+          _tituloCaso = newValue;
         },
       ),
     );
