@@ -1,23 +1,22 @@
+import 'package:flutter/material.dart';
 import 'package:coco/blocs/map/map_bloc.dart';
 import 'package:coco/enums/tipo_widget_caso_form.dart';
 import 'package:coco/models/caso.dart';
 import 'package:coco/pages/apertura_exitosa_de_caso_page.dart';
 import 'package:coco/pages/casos_home_page.dart';
-import 'package:coco/widgets/google_maps/google_maps.dart';
-import 'package:flutter/material.dart';
+import 'package:coco/widgets/google_maps/little_static_map.dart';
 import 'package:coco/utils/size_utils.dart';
 import 'package:coco/widgets/header_bar/header_bar.dart';
-import 'package:coco/utils/strings_utils.dart' as strings;
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:coco/utils/static_data/strings_utils.dart' as strings;
 /**
  * Tiene tres constructores debido a que se deben implementar tres vistas
  * distintas (crear, editar, proponer), pero con los mismos componentes, 
  * solo con algunos pocos cambios entre ellos.
  */
 //TODO: Buscar un mejor nombre para la clase
+// ignore: must_be_immutable
 class ModificarCasoPage extends StatefulWidget {
-
   static final routeCrear = 'crear_caso';
   static final routeEditar = 'editar_caso';
   static final routeAportar = 'aportar_a_caso';
@@ -27,6 +26,10 @@ class ModificarCasoPage extends StatefulWidget {
    */
   final TipoWidgetCasoForm _tipoWidgetCasoForm;
   final bool _isAlreadyCreated;
+
+  //solo se instanciará si este widget no es para crear (_isAlreadyCreated)
+  @protected
+  Caso caso;
 
   ModificarCasoPage.crear()
   : _tipoWidgetCasoForm = TipoWidgetCasoForm.CREAR,
@@ -48,11 +51,10 @@ class ModificarCasoPage extends StatefulWidget {
 }
 
 class _ModificarCasoPageState extends State<ModificarCasoPage> {
-
   BuildContext _context;
   SizeUtils _sizeUtils;
   String _submitNavigationRoute;
-  String _widgetTitle;
+  String _title;
 
   String _tipoDeSolicitud = strings.tiposDeSolicitud[0];
   List<bool> _selectedConoceDatosEntidadDestinoElements = [
@@ -62,9 +64,6 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
   String _nombreCaso = '';
   String _descripcionCaso = '';
   String _direccion = '';
-
-  //solo se instanciará si este widget no es para crear (_isAlreadyCreated)
-  Caso _caso;
 
   @override
   Widget build(BuildContext context) {
@@ -83,23 +82,30 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
     _context = context;
     _sizeUtils = SizeUtils();
     if(widget._isAlreadyCreated){
-      _caso = ModalRoute.of(context).settings.arguments;
+      _initCaso();
       _initInitialInputValues();
     }
     _initValoresDependientesDeTipoWidget();
   }
+  
+  /*
+    Lo pongo en una función aparte para cuando haga el testing pueda cambiar esta función.
+  */
+  void _initCaso(){
+    widget.caso = ModalRoute.of(context).settings.arguments;
+  }
 
   void _initInitialInputValues(){
-    _tipoDeSolicitud = _caso.tipoDeSolicitud;
+    _tipoDeSolicitud = widget.caso.tipoDeSolicitud;
     _initInitialToggleElements();
-    _nombreCaso = _caso.nombre;
-    _descripcionCaso = _caso.descripcion;
-    _direccion = _caso.direccion;
+    _nombreCaso = widget.caso.nombre;
+    _descripcionCaso = widget.caso.descripcion;
+    _direccion = widget.caso.direccion;
     //TODO: Implementar el resto de elementos
   }
 
   void _initInitialToggleElements(){
-    if(!_caso.conoceDatosDeEntidadDestino){
+    if(!widget.caso.conoceDatosDeEntidadDestino){
       _selectedConoceDatosEntidadDestinoElements = [
         false,
         true
@@ -149,11 +155,10 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
     );
   }
 
-  Widget _crearTitulo(){
-    
+  Widget _crearTitulo(){   
     return Center(
       child: Text(
-        _widgetTitle,
+        _title,
         style: TextStyle(
           fontSize: _sizeUtils.titleSize,
           color: Colors.black54
@@ -165,15 +170,15 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
   void _initValoresDependientesDeTipoWidget(){
     switch(widget._tipoWidgetCasoForm){
       case TipoWidgetCasoForm.CREAR:
-        _widgetTitle = 'CREAR UN CASO';
+        _title = 'CREAR UN CASO';
         _submitNavigationRoute = AperturaExitosaDeCasoPage.route;
       break;
       case TipoWidgetCasoForm.EDITAR:
-        _widgetTitle = 'EDITAR CASO';
+        _title = 'EDITAR CASO';
         _submitNavigationRoute = CasosHomePage.route;
       break;
       case TipoWidgetCasoForm.APORTAR:
-        _widgetTitle = 'APORTAR AL CASO';
+        _title = 'APORTAR AL CASO';
         _submitNavigationRoute = CasosHomePage.route;
       break;
     }
@@ -408,22 +413,7 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
   }
 
   Widget _crearGoogleMaps(){
-    return GoogleMapsComponent(
-      heightPercentage: 0.6,
-      widthPercentage: 0.65,
-    );
-    /*
-    return Container(
-      height: _sizeUtils.xasisSobreYasis * 0.4,
-      width: _sizeUtils.xasisSobreYasis * 0.7,
-      decoration: BoxDecoration(
-        color: Colors.blueGrey[200]
-      ),
-      child: Center(
-        child: Text('Mapa'),
-      ),
-    );
-    */
+    return LittleStaticMap(heightPercentage: 0.45);
   }
 
   Widget _crearBotonAdjuntar(){
@@ -479,6 +469,10 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
     );
   }
 
+  void _pressAdjuntar(){
+
+  }
+
   Widget _crearBotonSubmit(){
     final Map<String, double> padding = _sizeUtils.largeFlatButtonPadding;
     return MaterialButton(
@@ -497,9 +491,4 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
       },
     );
   }
-
-  void _definirRutaSegunTipoDeWidget(){
-    
-  }
-  
 }

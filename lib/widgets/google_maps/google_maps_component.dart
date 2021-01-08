@@ -5,13 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 class GoogleMapsComponent extends StatefulWidget {
 
-  final double widthPercentage;
-  final double heightPercentage;
-
-  GoogleMapsComponent({
-    @required this.widthPercentage,
-    @required this.heightPercentage
-  });
+  GoogleMapsComponent();
 
   @override
   _GoogleMapsComponentState createState() => _GoogleMapsComponentState();
@@ -26,8 +20,6 @@ class _GoogleMapsComponentState extends State<GoogleMapsComponent> {
   Widget build(BuildContext appContext) {
     _initInitialConfiguration(appContext);
     return Container(
-      height: _sizeUtils.xasisSobreYasis * widget.heightPercentage,
-      width: _sizeUtils.xasisSobreYasis * widget.widthPercentage,
       decoration: _createMapBoxDecoration(),
       child: BlocBuilder<MapBloc, MapState>(
         builder: (_, MapState state){
@@ -53,12 +45,29 @@ class _GoogleMapsComponentState extends State<GoogleMapsComponent> {
   }
 
   Widget _createGoogleMapsComponent(MapState state){
-    final LatLng initialTestPosition = state.currentPosition;
+    final LatLng initialPosition = state.currentPosition;
     return GoogleMap(
       initialCameraPosition: CameraPosition(
-        target: initialTestPosition,
+        target: initialPosition,
         zoom: 15.0,
       ),
+      markers: {
+        _createCurrentPositionMarker(initialPosition)
+      },
+    );
+  }
+
+  Marker _createCurrentPositionMarker(LatLng currentPosition){
+    return Marker(
+      markerId: MarkerId('0'),
+      position: currentPosition,
+      draggable: true,
+      onDragEnd: (LatLng newPosition){
+        //TODO: hacer que se actualice la nueva posición en el mapa
+        final MapBloc mapBloc = BlocProvider.of<MapBloc>(context);
+        final MapEvent updatePositionEvent = UpdatePosition(newPosition: newPosition);
+        mapBloc.add(updatePositionEvent);
+      }
     );
   }
 }

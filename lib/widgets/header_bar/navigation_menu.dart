@@ -1,6 +1,7 @@
 import 'package:coco/utils/size_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:coco/utils/navigation_utils.dart' as navigation;
+import 'package:coco/utils/static_data/navigation_utils.dart' as navigation;
+import 'package:coco/utils/services_managers/user_service_manager.dart' as userServiceManager;
 //Navegación
 // ignore: must_be_immutable
 class NavigationMenu extends StatelessWidget {
@@ -110,7 +111,7 @@ class NavigationMenu extends StatelessWidget {
         ),
       ),
       onTap: (){
-        Navigator.of(_context).pushNamed(currentItem['route']);
+        userServiceManager.manageLogoutProccess(_context, currentItem['route']);
       },
     );
   }

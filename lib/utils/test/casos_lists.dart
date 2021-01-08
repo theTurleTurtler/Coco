@@ -49,7 +49,7 @@ final List<Caso> casosAbiertos = [
     json: {
       'tipo_de_solicitud':'Derecho de petición',
       'conoce_datos_de_entidad_destino':true,
-      'nombre':'Se exporta droga en las lechonas',
+      'nombre':'Se distribuye droga en las lechonas',
       'descripcion':'Se hace una lechona cada 2 días, desde la ventana se puede ver claramente cómo se llena de cocaína.',
       'fecha_publicacion':DateTime(2020, 7, 10),
       'direccion':'Cali',

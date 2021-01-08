@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:coco/utils/size_utils.dart';
-import 'package:coco/utils/strings_utils.dart' as strings;
+import 'package:coco/utils/static_data/strings_utils.dart' as strings;
 
 class Filtros extends StatefulWidget {
 

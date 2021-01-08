@@ -2,7 +2,7 @@ import 'package:coco/models/caso.dart';
 import 'package:coco/pages/lista_de_casos_page.dart';
 import 'package:coco/utils/size_utils.dart';
 import 'package:coco/widgets/casos/caso_card.dart';
-import 'package:coco/widgets/casos/casos_types.dart';
+import 'package:coco/enums/casos_types.dart';
 import 'package:flutter/material.dart';
 import 'package:coco/utils/test/casos_lists.dart' as casos;
 // ignore: must_be_immutable

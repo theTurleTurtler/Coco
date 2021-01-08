@@ -29,7 +29,6 @@ class ServiceStatusErr extends CustomError{
   ){
     if(message == null)
       this.message = _getMessageByStatus(this.status);
-    
   }
 
   String _getMessageByStatus(int searchedStatus){

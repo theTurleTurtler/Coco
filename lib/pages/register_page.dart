@@ -1,8 +1,7 @@
-import 'package:coco/pages/apertura_exitosa_de_caso_page.dart';
-import 'package:coco/pages/casos_home_page.dart';
-import 'package:coco/utils/size_utils.dart';
-import 'package:coco/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:coco/widgets/common_widgets.dart';
+import 'package:coco/utils/size_utils.dart';
+import 'package:coco/utils/services_managers/user_service_manager.dart' as userService;
 
 class RegisterPage extends StatelessWidget {
   static final String route = 'register';
@@ -238,9 +237,7 @@ class RegisterPage extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
       shape: StadiumBorder(),
       color: Theme.of(_context).primaryColor,
-      onPressed: (){
-        Navigator.of(_context).pushReplacementNamed(CasosHomePage.route);
-      },
+      onPressed: _register,
     );
   }
 
@@ -252,5 +249,15 @@ class RegisterPage extends StatelessWidget {
         fontSize: _sizeUtils.littleTitleSize * 0.95
       ),
     );
+  }
+
+  void _register(){
+    final Map<String, dynamic> registerData = {
+      'name':_userName,
+      'email':_email,
+      'password':_password,
+      'confirmed_password':_confirmedPassword
+    };
+    userService.manageRegisterProcess(_context, registerData);
   }
 }

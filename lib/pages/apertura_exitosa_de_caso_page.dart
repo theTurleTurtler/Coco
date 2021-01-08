@@ -2,7 +2,7 @@ import 'package:coco/pages/casos_home_page.dart';
 import 'package:coco/utils/size_utils.dart';
 import 'package:coco/widgets/header_bar/header_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:coco/utils/strings_utils.dart' as strings;
+import 'package:coco/utils/static_data/strings_utils.dart' as strings;
 
 class AperturaExitosaDeCasoPage extends StatelessWidget {
 

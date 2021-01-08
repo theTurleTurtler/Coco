@@ -11,25 +11,32 @@ part 'map_state.dart';
 class MapBloc extends Bloc<MapEvent, MapState> {
   MapBloc() : super(MapState());
 
+  MapState _currentNewState;
+
   @override
   Stream<MapState> mapEventToState(
     MapEvent event,
   ) async* {
     switch(event.runtimeType){
       case UpdatePosition:
-        //TODO: implementar el método correspondiente
-        yield state.copyWith();
+        _updatePosition(event as UpdatePosition);
+        yield _currentNewState;
       break;
       case UpdatePositionFromStringDirection:
-        final LatLng newPosition = await _generateNewPositionFromStringDirection(event as UpdatePositionFromStringDirection);
-        yield state.copyWith(currentPosition: newPosition);
+        await _updatePositionFromStringDirection(event as UpdatePositionFromStringDirection);
+        yield _currentNewState;
       break;
     }
   }
 
-  Future<LatLng> _generateNewPositionFromStringDirection(UpdatePositionFromStringDirection event)async{
+  void _updatePosition(UpdatePosition event){
+    final LatLng newPosition = event.newPosition;
+    _currentNewState = state.copyWith(currentPosition: newPosition);
+  }
+
+  Future<void> _updatePositionFromStringDirection(UpdatePositionFromStringDirection event)async{
     final String stringDirection = event.direction;
     final LatLng newPosition = await googleServices.getUbicacionFromDireccionString(stringDirection);
-    return newPosition;
+    _currentNewState = state.copyWith(currentPosition: newPosition);
   }
 }

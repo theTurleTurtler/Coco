@@ -13,13 +13,11 @@ final String _failedRefreshTokenDescription = 'Se intenta refrescar un anterior 
 final String _successfulLogoutDescription = 'Se intenta hacer logout con un accessToken existente. Se debe lograr.';
 final String _failedLogoutDescription = 'Se intenta hacer logout con un accessToken falso. Se debe fallar.';
 
-final String _successEmailLoginTest = 'email1@gmail.com';
-final String _successPasswordLoginTest = '12345678';
-final String _failEmailLoginTest = 'email200000000@gmail.com';
-final String _failPasswordLoginTest = '123456789';
-final String _successNameRegisterTest = 'The Turtle Test';
-final String _successPasswordRegisterTest = '12345678';
-final String _successConfirmedPasswordRegisterTest = '12345678';
+final String _successEmailLogin = 'email1@gmail.com';
+final String _successPassword = '12345678';
+final String _failEmailLogin = 'email200000000@gmail.com';
+final String _failPasswordLogin = '123456789';
+final String _successConfirmedPasswordRegister = '12345678';
 final String _failAccessToken = 'accessTokensitoMalo';
 
 //Esta variable se usará y cambiará durante la suceción de successful login, getUserInformation, refreshToken, logout.
@@ -35,64 +33,60 @@ void _executeLoginTest(){
     _testSuccessfulRegister();
     _testFailedRegister();
   });
+  
   group('Sucesión de successful login, getUserInformation, logout, y refresh', (){
     _testSuccessfulLogin();
     _testSuccessfulGetUserInformation();    
     _testSuccessfulRefreshToken();
     _testSuccessfulLogout();    
   });
-
+  
+  
   group('sucesión de failed login, getUserInformation, logout, y refresh', (){
     _testFailedLogin();
     _testFailedGetUserInformation();
     _testFailedRefreshToken();
     _testFailedLogout();
   });
-
+  
 }
 
 Future<void> _testSuccessfulRegister()async{
   test(_successfulRegisterDescription, ()async{
     try{
       await _executeSuccessRegisterValidations();
-    }on ServiceStatusErr catch(_){
-      fail('succesfulRegister: No debería ocurrir un ServiceStatusErr.');
+    }on TestFailure catch(err){
+
+    }on ServiceStatusErr catch(err){
+      fail('succesfulRegister: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
     }catch(err){
       fail('succesfulRegister: Ocurrió un error inesperado: ${err.toString()}');
     }
   });
-  
 }
 
 Future<void> _executeSuccessRegisterValidations()async{
-  _successEmailRegisterTest = _generateNewUserEmailFromCurrentDate();
-  Map<String, dynamic> registerData = {
-    'name':_successNameRegisterTest,
-    'email':_successEmailRegisterTest,
-    'password':_successPasswordRegisterTest,
-    'confirmed_password':_successConfirmedPasswordRegisterTest
+  final String name = _createUniqueName();
+  final String email = _createUniqueEmail();
+  final Map<String, dynamic> registerData = {
+    'name':name,
+    'email':email,
+    'password':_successPassword,
+    'confirmed_password':_successConfirmedPasswordRegister
   };
   final Map<String, dynamic> response = await userService.register(registerData);
   _executeSuccessfulTestValidations(response);
   expect(response['data']['original']['access_token'], isNotNull, reason:'el token debe existir');
 }
 
-/**
- * Crea un email único, basado en la fecha actual exacta (desde el año hasta el segundo).
- */
-String _generateNewUserEmailFromCurrentDate(){
-  DateTime nowTime = DateTime.now();
-  String newEmail = 'email';
-  newEmail += '${nowTime.year}${nowTime.month}${nowTime.day}${nowTime.hour}${nowTime.minute}${nowTime.second}';
-  newEmail += '@gmail.com';
-  return newEmail;
-}
 
 Future<void> _testFailedRegister()async{
   test(_failedRegisterDescription, ()async{
     try{
       await _executeFailedByExistingEmailRegisterValidations();
       fail('failedRegister: Debería haberse generado un ServiceStatusErr');
+    }on TestFailure catch(err){
+
     }on ServiceStatusErr catch(err){
       if(err.status != 422)
         fail('failedRegister: el status del error debería ser 422. y es ${err.status}');
@@ -103,28 +97,17 @@ Future<void> _testFailedRegister()async{
 }
 
 Future<void> _executeFailedByExistingEmailRegisterValidations()async{
+  final String name = _createUniqueName();
   Map<String, dynamic> registerData = {
-    'name':_successNameRegisterTest,
-    'email':_successEmailLoginTest,
-    'password':_successPasswordRegisterTest,
-    'confirmed_password':_successConfirmedPasswordRegisterTest
+    'name':name,
+    'email':_successEmailLogin,
+    'password':_successPassword,
+    'confirmed_password':_successConfirmedPasswordRegister
   };
   final Map<String, dynamic> response = await userService.register(registerData);
   expect(response, isNotNull, reason: 'el response nunca debe ser null');
   expect(response['error'], isNotNull, reason:'el response debe venir con un mensaje de error');
   expect(response['code'], 422, reason:'El código de error debe ser 422');
-}
-
-Future<void> _testSuccessfulLogin()async{
-  test(_successfulLoginDescription, ()async{
-    try{
-      await _executeSuccessfulLoginValidations();
-    }on ServiceStatusErr catch(_){
-      fail('sucessfulLogin: No debería ocurrir un ServiceStatusErr. Los datos del login están bien');
-    }catch(err){
-      fail('sucessfulLogin: Ocurrió un error inesperado: ${err.toString()}');
-    }
-  });
 }
 
 /**
@@ -133,10 +116,24 @@ Future<void> _testSuccessfulLogin()async{
  * **********************************************
  */
 
+Future<void> _testSuccessfulLogin()async{
+  test(_successfulLoginDescription, ()async{
+    try{
+      await _executeSuccessfulLoginValidations();
+    }on TestFailure catch(err){
+
+    }on ServiceStatusErr catch(_){
+      fail('sucessfulLogin: No debería ocurrir un ServiceStatusErr. Los datos del login están bien');
+    }catch(err){
+      fail('sucessfulLogin: Ocurrió un error inesperado: ${err.toString()}');
+    }
+  });
+}
+
 Future<void> _executeSuccessfulLoginValidations()async{
   Map<String, dynamic> loginData = {
-    'email':_successEmailLoginTest,
-    'password':_successPasswordLoginTest
+    'email':_successEmailLogin,
+    'password':_successPassword
   };
   Map<String, dynamic> response = await userService.login(loginData);
   _executeSuccessfulTestValidations(response);
@@ -144,20 +141,6 @@ Future<void> _executeSuccessfulLoginValidations()async{
   expect(accessToken, isNotNull, reason:'el token debe existir');
   _successAccessToken = accessToken;
 
-}
-
-Future<void> _testFailedLogin()async{
-  test(_failedLoginDescription, ()async{
-    try{
-      await _executeFailedLoginValidations();
-      fail('failedLogin: la ejecución debería haber parado debido al ServiceStatusErr.');
-    }on ServiceStatusErr catch(err){
-      if(err.status != 401)
-        fail('failedLogin: El status code debería ser 401, y es : ${err.status}');
-    }catch(err){
-      fail('failedLogin: Ocurrió un error inesperado: ${err.toString()}');
-    }
-  });
 }
 
 Future<void> _executeSuccessfulGetUserInformationValidations()async{
@@ -169,20 +152,6 @@ Future<void> _executeSuccessfulGetUserInformationValidations()async{
   expect(userInformation['id'], isNotNull, reason: 'El id del usuario debe venir en su información');
   expect(userInformation['name'], isNotNull, reason: 'El name del usuario debe venir en su información');
   expect(userInformation['email'], isNotNull, reason: 'El email del usuario debe venir en su información');
-}
-
-Future<void> _testFailedGetUserInformation()async{
-  test(_failedGetUserInformationDescription, ()async{
-    try{
-      await _executeFailedGetUserInformationValidations();
-      fail('failedGetUserInformation: la ejecución debería haber parado debido al ServiceStatusErr.');
-    }on ServiceStatusErr catch(err){
-      if(err.status != 401)
-        fail('failedGetUserInformation: El status code debería ser 401, y es : ${err.status}');
-    }catch(err){
-      fail('failedGetUserInformation: Ocurrió un error inesperado: ${err.toString()}');
-    }
-  });
 }
 
 Future<void> _executeSucceRefreshTokenValidations()async{
@@ -198,6 +167,8 @@ Future<void> _testSuccessfulLogout()async{
   test(_successfulLogoutDescription, ()async{
     try{
       await _executeSuccessfulLogoutValidations();
+    }on TestFailure catch(err){
+
     }on ServiceStatusErr catch(_){
       fail('successfulLogout: No debería ocurrir un ServiceStatusErr. Los datos del login están bien');
     }catch(err){
@@ -225,10 +196,26 @@ void _executeSuccessfulTestValidations(Map<String, dynamic> response){
  * **********************************************
  */
 
+Future<void> _testFailedLogin()async{
+  test(_failedLoginDescription, ()async{
+    try{
+      await _executeFailedLoginValidations();
+      fail('failedLogin: la ejecución debería haber parado debido al ServiceStatusErr.');
+    }on TestFailure catch(err){
+
+    }on ServiceStatusErr catch(err){
+      if(err.status != 401)
+        fail('failedLogin: El status code debería ser 401, y es : ${err.status}');
+    }catch(err){
+      fail('failedLogin: Ocurrió un error inesperado: ${err.toString()}');
+    }
+  });
+}
+
 Future<void> _executeFailedLoginValidations()async{
   Map<String, dynamic> loginData = {
-    'email':_failEmailLoginTest,
-    'password':_failPasswordLoginTest
+    'email':_failEmailLogin,
+    'password':_failPasswordLogin
   };
   Map<String, dynamic> response = await userService.login(loginData);
 }
@@ -237,6 +224,8 @@ Future<void> _testSuccessfulGetUserInformation()async{
   test(_successfulGetUserInformationDescription, ()async{
     try{
       await _executeSuccessfulGetUserInformationValidations();
+    }on TestFailure catch(err){
+
     }on ServiceStatusErr catch(err){
       fail('successfulGetUserInformation: No debería ocurrir un ServiceStatusErr: ${err.message}');
     }catch(err){
@@ -244,6 +233,22 @@ Future<void> _testSuccessfulGetUserInformation()async{
     }
   });
 }
+
+Future<void> _testFailedGetUserInformation()async{
+  test(_failedGetUserInformationDescription, ()async{
+    try{
+      await _executeFailedGetUserInformationValidations();
+      fail('failedGetUserInformation: la ejecución debería haber parado debido al ServiceStatusErr.');
+    }on TestFailure catch(err){
+
+    }on ServiceStatusErr catch(err){
+      if(err.status != 401)
+        fail('failedGetUserInformation: El status code debería ser 401, y es : ${err.status}');
+    }catch(err){
+      fail('failedGetUserInformation: Ocurrió un error inesperado: ${err.toString()}');
+    }
+  });
+} 
 
 Future<void> _executeFailedGetUserInformationValidations()async{
   Map<String, dynamic> bodyData = {'token':_failAccessToken};
@@ -254,6 +259,8 @@ Future<void> _testSuccessfulRefreshToken()async{
   test(_successfulRefreshTokenDescription, ()async{
     try{
       await _executeSucceRefreshTokenValidations();
+    }on TestFailure catch(err){
+
     }on ServiceStatusErr catch(_){
       fail('successfulRefreshToken: No debería ocurrir un ServiceStatusErr.');
     }catch(err){
@@ -267,6 +274,8 @@ Future<void> _testFailedRefreshToken()async{
     try{
       await _executeFailedRefreshTokenValidations();
       fail('failedRefreshToken: la ejecución debería haber parado debido al ServiceStatusErr.');
+    }on TestFailure catch(err){
+
     }on ServiceStatusErr catch(err){
       if(err.status != 401)
         fail('failedRefreshToken: El status code debería ser 401, y es: ${err.status}');
@@ -286,6 +295,8 @@ Future<void> _testFailedLogout()async{
     try{
       await _executeFailedLogoutValidations();
       fail('failedLogout: la ejecución debería haber parado debido al ServiceStatusErr.');
+    }on TestFailure catch(err){
+
     }on ServiceStatusErr catch(err){
       if(err.status != 401)
         fail('failedLogout: El status code debería ser 401, y es : ${err.status}');
@@ -298,4 +309,20 @@ Future<void> _testFailedLogout()async{
 Future<void> _executeFailedLogoutValidations()async{
   Map<String, dynamic> bodyData = {'token':_failAccessToken};
   Map<String, dynamic> response = await userService.logout(bodyData);
+}
+
+String _createUniqueEmail(){
+  final String email = 'email_${_createUniqueString()}@gmail.com';
+  return email;
+}
+
+String _createUniqueName(){
+  final String name = 'John ${_createUniqueString()}';
+  return name;
+}
+
+String _createUniqueString(){
+  final DateTime nowDate = DateTime.now();
+  final String uniqueString = '${nowDate.year}${nowDate.month}${nowDate.day}${nowDate.hour}${nowDate.minute}${nowDate.second}';
+  return uniqueString;
 }

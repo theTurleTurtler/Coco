@@ -120,13 +120,9 @@ abstract class BasicService{
   
   @protected
   void evaluateServerResponse(http.Response serverResponse){
-    try{
-      currentResponseBody = json.decode(serverResponse.body);
-      if(currentResponseBody['error'] != null)
-        throw ServiceStatusErr(status: currentResponseBody['code'], extraInformation: currentResponseBody['error']);
-    }catch(err){
-      throw ServiceStatusErr(status: serverResponse.statusCode, extraInformation: serverResponse.reasonPhrase);
-    }
+    currentResponseBody = json.decode(serverResponse.body);
+    if(currentResponseBody['error'] != null)
+      throw ServiceStatusErr(status: currentResponseBody['code'], extraInformation: currentResponseBody['error']); 
   }
 
   /**
