@@ -50,15 +50,15 @@ class CasosService extends BasicService{
 
   //TODO: Confirmar implementación y arreglo en el back
 
-  Future<Map<String, dynamic>> createEstado(Map<String, dynamic> body)async{
-    final String requestUrl = _panelUrl + 'casos';
+  Future<Map<String, dynamic>> createTipo(Map<String, dynamic> body)async{
+    final String requestUrl = _panelUrl + 'tipos';
     final Map<String, Map<String, dynamic>> headersAndBody = createHeadersAndBodyForARequest(body: body);
     await executeGeneralEndOfRequest(requestType: RequestType.POST, requestUrl: requestUrl, headersAndBody: headersAndBody);
     return currentResponseBody;
   }
 
   Future<Map<String, dynamic>> createMultimedia(Map<String, dynamic> body)async{
-    final String requestUrl = _panelUrl + 'casos';
+    final String requestUrl = _panelUrl + 'multimedias';
     final Map<String, Map<String, dynamic>> headersAndBody = createHeadersAndBodyForARequest(body: body);
     await executeGeneralEndOfRequest(requestType: RequestType.POST, requestUrl: requestUrl, headersAndBody: headersAndBody);
     return currentResponseBody;

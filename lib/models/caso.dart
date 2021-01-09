@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:meta/meta.dart';
 
 class Caso{
+  final int id;
   final String tipoDeSolicitud;
   final bool conoceDatosDeEntidadDestino;
   final String titulo;
@@ -16,6 +17,7 @@ class Caso{
   List<File> multimediaItems;
 
   Caso({
+    @required this.id,
     @required this.tipoDeSolicitud,
     @required this.conoceDatosDeEntidadDestino,
     @required this.titulo,
@@ -31,16 +33,17 @@ class Caso{
   Caso.fromJson({
     @required Map<String, dynamic> json
   }):
-    this.tipoDeSolicitud = json['tipo_de_solicitud'],
+    this.id = json['id'],
+    this.tipoDeSolicitud = json['tipo'],
     this.conoceDatosDeEntidadDestino = json['conoce_datos_de_entidad_destino'],
-    this.titulo = json['titulo'],
-    this.descripcion = json['descripcion'],
+    this.titulo = json['titulo']['titulo'],
+    this.descripcion = json['descripcion']['descripcion'],
     this.fechaPublicacion = json['fecha_publicacion'],
-    this.direccion = json['direccion'],
-    this.latitud = json['latitud'],
-    this.longitud = json['longitud'],
+    this.direccion = json['direccion']['direccion'],
+    this.latitud = double.parse((json['latLong']['latitud'].toString())),
+    this.longitud =  double.parse((json['latLong']['longitud'].toString())),
     this.estado = json['estado'],
-    this.multimediaItems = json['multimedia_items']
+    this.multimediaItems = json['multimedia_items']??[]
   {
     //TODO: Quitar cuando esté hecha la parte de obtener multimedia del back
     this.multimediaItems = _testingInitOfMultimediaItems();
@@ -48,6 +51,7 @@ class Caso{
   
 
   Map<String, dynamic> get toJson => {
+    'id':this.id,
     'tipo_de_solicitud':this.tipoDeSolicitud,
     'conoce_datos_de_entidad_destino':this.conoceDatosDeEntidadDestino,
     'titulo':this.titulo,
@@ -61,6 +65,7 @@ class Caso{
   };
 
   Caso copyWith({
+    int id,
     String tipoDeSolicitud,
     String conoceDatosDeEntidadDestino,
     String titulo,
@@ -72,6 +77,7 @@ class Caso{
     String estado, 
     List<File> multimediaItems
   })=>Caso(
+    id: id??this.id,
     tipoDeSolicitud: tipoDeSolicitud??this.tipoDeSolicitud,
     conoceDatosDeEntidadDestino: conoceDatosDeEntidadDestino??this.conoceDatosDeEntidadDestino,
     titulo: titulo??this.titulo,

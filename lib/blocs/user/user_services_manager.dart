@@ -104,6 +104,34 @@ class UserServicesManager{
     }
   }
 
+  Future<void> logout()async{
+    try{
+      final Map<String, dynamic> body = _generateAccessTokenBody();
+      final Map<String, dynamic> response = await userService.logout(body);
+      _userBloc.add(ResetUserInformation());
+    }on ServiceStatusErr catch(err){
+      print(err);      
+    }catch(err){
+      print(err);
+    }
+  }
+
+  Future<void> refreshAccessToken(String lastAccessToken)async{
+    try{
+      final Map<String, dynamic> body = {
+        'token':lastAccessToken
+      };
+      final Map<String, dynamic> response = await userService.refreshAccessToken(body);
+      final String newAccessToken = response['data']['original']['access_token'];
+      final SetAccessToken setAccessTokenEvent = SetAccessToken(accessToken: newAccessToken);
+      _userBloc.add(setAccessTokenEvent);
+    }on ServiceStatusErr catch(err){
+      print(err);      
+    }catch(err){
+      print(err);
+    }
+  }
+
   Map<String, dynamic> _generateAccessTokenBody(){
     final String accessToken = _userBloc.state.accessToken;
     return {

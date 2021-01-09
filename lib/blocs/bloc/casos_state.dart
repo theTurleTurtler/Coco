@@ -2,22 +2,22 @@ part of 'casos_bloc.dart';
 
 @immutable
 class CasosState {
-  final bool cargados;
+  final bool estanCargados;
   final List<Caso> casos;
 
   CasosState({
-    bool cargados,
+    bool estanCargados,
     List<Caso> casos
   }):
-    this.cargados = cargados??false,
+    this.estanCargados = estanCargados??false,
     this.casos = casos??null
     ;
 
   CasosState copyWith({
-    bool cargados,
+    bool estanCargados,
     List<Caso> casos
   }) => CasosState(
-    cargados: cargados??this.cargados,
+    estanCargados: estanCargados??this.estanCargados,
     casos: casos??this.casos
   );
 }

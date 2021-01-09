@@ -26,6 +26,6 @@ class CasosBloc extends Bloc<CasosEvent, CasosState> {
 
   void _setCasos(SetCasos event){
     final List<Caso> casos = event.casos;
-    _currentYieldedState = state.copyWith(cargados: true, casos: casos);
+    _currentYieldedState = state.copyWith(estanCargados: true, casos: casos);
   }
 }

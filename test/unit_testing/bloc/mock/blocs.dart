@@ -45,9 +45,9 @@ class MockUserBloc extends Mock implements UserBloc{
   UserState get state => this._mockState;
 }
 
-class MocCasosBloc extends Mock implements CasosBloc{
+class MockCasosBloc extends Mock implements CasosBloc{
   CasosState _mockState;
-  MocCasosBloc() 
+  MockCasosBloc() 
   : super(){
     _mockState = CasosState();
   }
@@ -63,7 +63,7 @@ class MocCasosBloc extends Mock implements CasosBloc{
 
   @override
   void _setAuthorizationToken(SetCasos event){
-    this._mockState = this._mockState.copyWith(cargados: true, casos: event.casos);
+    this._mockState = this._mockState.copyWith(estanCargados: true, casos: event.casos);
   }
 
   @override

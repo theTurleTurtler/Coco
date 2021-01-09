@@ -50,10 +50,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   }
 
   Future<void> _resetUserInformation()async{
-    _currentNewState = state.copyWith(
-      accountStep: AccountStep.UNLOGGED,
-      user: null
-    );
+    _currentNewState = state.reset();
   }
 
 }
