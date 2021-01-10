@@ -1,103 +1,135 @@
 import 'dart:io';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:meta/meta.dart';
 
 class Caso{
-  final int id;
-  final String tipoDeSolicitud;
-  final bool conoceDatosDeEntidadDestino;
-  final String titulo;
-  final String descripcion;
-  final DateTime fechaPublicacion;
-  //mientras implementamos el uso de LatLng
-  final String direccion;
-  final double latitud;
-  final String estado;
-  final double longitud;
-  //TODO: volver final cuando se haya implementado la obtención de multimedia desde el back
-  List<File> multimediaItems;
-
-  Caso({
-    @required this.id,
-    @required this.tipoDeSolicitud,
-    @required this.conoceDatosDeEntidadDestino,
-    @required this.titulo,
-    @required this.descripcion,
-    @required this.fechaPublicacion,
-    @required this.direccion,
-    @required this.latitud,
-    @required this.longitud,
-    @required this.estado,
-    @required this.multimediaItems 
-  });
+  int id;
+  DateTime fechaPublicacion;
+  String estado;
+  _PartWithStringValue _tipoDeSolicitud;
+  _PartWithStringValue _titulo;
+  _PartWithStringValue _descripcion;
+  _PartWithStringValue _direccion;
+  _LatLongPart _latLong;
+  List<_MultimediaPart> multimediaItems;
+  //TODO: Implementar después de que funcione en el back
+  _PartWithBoolValue _conoceDatosDeEntidadDestino;
 
   Caso.fromJson({
     @required Map<String, dynamic> json
-  }):
-    this.id = json['id'],
-    this.tipoDeSolicitud = json['tipo'],
-    this.conoceDatosDeEntidadDestino = json['conoce_datos_de_entidad_destino'],
-    this.titulo = json['titulo']['titulo'],
-    this.descripcion = json['descripcion']['descripcion'],
-    this.fechaPublicacion = json['fecha_publicacion'],
-    this.direccion = json['direccion']['direccion'],
-    this.latitud = double.parse((json['latLong']['latitud'].toString())),
-    this.longitud =  double.parse((json['latLong']['longitud'].toString())),
-    this.estado = json['estado'],
-    this.multimediaItems = json['multimedia_items']??[]
-  {
-    //TODO: Quitar cuando esté hecha la parte de obtener multimedia del back
-    this.multimediaItems = _testingInitOfMultimediaItems();
+  }){
+    this.id = json['id'];
+    this._tipoDeSolicitud = _PartWithStringValue(data: json['tipo'], partName: 'tipo');
+    this._titulo = _PartWithStringValue(data: json['titulo'], partName: 'titulo');
+    this._descripcion = _PartWithStringValue(data: json['descripcion'], partName: 'descripcion');
+    this._direccion = _PartWithStringValue(data: json['direccion'], partName: 'direccion');    
+    this._latLong = _LatLongPart(data: json['latLong']);
+    _initMultimediaItems(json['multimedia']);
   }
-  
 
-  Map<String, dynamic> get toJson => {
-    'id':this.id,
-    'tipo_de_solicitud':this.tipoDeSolicitud,
-    'conoce_datos_de_entidad_destino':this.conoceDatosDeEntidadDestino,
-    'titulo':this.titulo,
-    'descripcion':this.descripcion,
-    'fecha_publicacion':this.fechaPublicacion,
-    'direccion':this.direccion,
-    'latitud':this.latitud,    
-    'longitud':this.longitud,
-    'estado':this.estado,
-    'multimedia_items':this.multimediaItems
-  };
+  void _initMultimediaItems(dynamic multimediaItemsMap){
+    final bool hasValue = multimediaItemsMap.runtimeType != String;
+    if(!hasValue)
+      return;
+    final List<Map<String, dynamic>> itemsMap = multimediaItemsMap.cast<Map<String, dynamic>>();
+    this.multimediaItems = [];
+    itemsMap.forEach((Map<String, dynamic> item) {
+      final _MultimediaPart multimediaPart = _MultimediaPart(
+        servicesRoutes: item['rutas'].cast<String, String>(),
+        ruta: item['ruta'],
+        tipo: item['tipo'],
+        owner: item['owner'].cast<String, String>(),
+        rutaCaso: item['rutaCaso']
+      );
+      this.multimediaItems.add(multimediaPart);
+    });
+  }
 
-  Caso copyWith({
-    int id,
-    String tipoDeSolicitud,
-    String conoceDatosDeEntidadDestino,
-    String titulo,
-    String descripcion,
-    DateTime fechaPublicacion,
-    String direccion,
-    String latitud,
-    String longitud,
-    String estado, 
-    List<File> multimediaItems
-  })=>Caso(
-    id: id??this.id,
-    tipoDeSolicitud: tipoDeSolicitud??this.tipoDeSolicitud,
-    conoceDatosDeEntidadDestino: conoceDatosDeEntidadDestino??this.conoceDatosDeEntidadDestino,
-    titulo: titulo??this.titulo,
-    descripcion: descripcion??this.descripcion,
-    fechaPublicacion: fechaPublicacion??this.fechaPublicacion,
-    direccion: direccion??this.direccion,
-    latitud: latitud??this.latitud,    
-    longitud: longitud??this.longitud,
-    estado: estado??this.estado,
-    multimediaItems: multimediaItems??this.multimediaItems
-  );
+  String get titulo => this._titulo.value;
+  String get tipoDeSolicitud => this._tipoDeSolicitud.value;
+  String get descripcion => this._descripcion.value;
+  String get direccion => this._direccion.value;
+  bool get conoceDatosDeEntidadDestino => (this._conoceDatosDeEntidadDestino.hasValue)? this._conoceDatosDeEntidadDestino.value : false;
+  LatLng get latLng => (_latLong.hasValue)? LatLng(_latLong.latitud, _latLong.longitud):null;
+}
 
-  //TODO: borrar una vez se haya implementado la obtención de multimedia del back
-  List<File> _testingInitOfMultimediaItems(){
-    List<File> multimedia = [];
-    for(int i = 0; i < 10; i++){
-      final File currentFile = File('assets/logo_coco_1');
-      multimedia.add(currentFile);
+
+abstract class _CasoPart{
+  Map<String, String> servicesRoutes;
+  bool hasValue;
+}
+
+abstract class _CasoPartWithSingleValue extends _CasoPart{
+  String _value;
+  _CasoPartWithSingleValue({
+    dynamic data,
+    String partName
+  }){
+    if(data.runtimeType == String){
+      this.hasValue = false;
+      this._value = data;
+      this.servicesRoutes = null;
+    }else{
+      this.hasValue = true;
+      this._value = data[partName];
+      this.servicesRoutes = data['rutas'].cast<String, String>();
     }
-    return multimedia;
   }
-  
+}
+
+class _PartWithStringValue extends _CasoPartWithSingleValue{
+  _PartWithStringValue({
+    dynamic data,
+    String partName
+  }):super(data: data, partName: partName)
+    ;
+
+  String get value => this._value;
+}
+
+class _PartWithBoolValue extends _CasoPartWithSingleValue{
+  _PartWithBoolValue({
+    dynamic data,
+    String partName
+  }):super(data: data, partName: partName)
+    ;
+
+  bool get value => (hasValue)? this._value == 'true' : null;
+  String get withoutValueMessage => this._value;
+}
+
+class _LatLongPart extends _CasoPart{
+  String withoutValueMessage;
+  double latitud;
+  double longitud;
+
+  _LatLongPart({
+    dynamic data
+  }){
+    if(data.runtimeType != String){
+      this.hasValue = true;
+      this.latitud = double.parse(data['latitud']);
+      this.longitud = double.parse(data['longitud']);
+    }else{
+      this.hasValue = false;
+      this.withoutValueMessage = data;
+    }
+  }
+}
+
+class _MultimediaPart extends _CasoPart{
+  final String ruta;
+  final String tipo;
+  final Map<String, String> owner;
+  final String rutaCaso;  
+  _MultimediaPart({
+    Map<String, String> servicesRoutes,
+    this.ruta,
+    this.tipo,
+    this.owner,
+    this.rutaCaso,
+  }){
+    this.servicesRoutes = servicesRoutes;
+  }
+
 }

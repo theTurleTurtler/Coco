@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:coco/errors/services/service_status_err.dart';
 import 'package:coco/services/casos_service.dart';
@@ -11,16 +13,25 @@ final String _createTituloDescription = 'Se testeará método del servicio de cr
 final String _createDescriptionDescription = 'Se testeará método del servicio de crear descripcion.';
 final String _createDireccionDescription = 'Se testeará método del servicio de crear dirección.';
 final String _createLatLongDescription = 'Se testeará método del servicio de crear latLong.';
-final String _createEstadoDescription = 'Se testeará método del servicio de crear estado.';
+final String _createTipoDescription = 'Se testeará método del servicio de crear estado.';
 final String _createMultimediaDescription = 'Se testeará método del servicio de crear multimedia.';
-
-
-
 
 final Map<String, dynamic> _loginData = {
   'email':'email1@gmail.com',
   'password':'12345678'
 };
+final String _multimediaPhotosBasePath = 'assets\\test\\multimedia_data\\photos\\';
+final List<String> _multimediaPhotosNames = [
+  'coco_1.jpg',
+  'coco_2.png',
+  'coco_3.jpg'
+];
+final String _multimediaVideosBasePath = 'assets\\test\\multimedia_data\\videos\\';
+final List<String> _multimediaVideosNames = [
+  'coco_1.mp4',
+  'coco_2.mp4',
+];
+
 String _authorizationToken;
 int _currentCreatedCasoId;
 
@@ -32,6 +43,8 @@ void main(){
     _testCreateDescription();
     _testCreateDireccion();
     _testCreateLatLong();
+    _testCreateTipo();
+    _testCreateMultimedia();
   });
 }
 
@@ -43,19 +56,19 @@ void _testLoadCasos(){
   test(_loadCasosDescription, ()async{
     try{
       await _executeLoadCasosValidations();
-    }on TestFailure catch(_){
-
+    }on TestFailure catch(err){
+      throw err;
     }on ServiceStatusErr catch(err){
-      fail('succesfulRegister: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
+      fail('loadCasos: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
     }catch(err){
-      fail('succesfulRegister: Ocurrió un error inesperado: ${err.toString()}');
+      fail('loadCasos: Ocurrió un error inesperado: ${err.toString()}');
     }
   });
 }
 
 Future<void> _executeLoadCasosValidations()async{
   await _login();
-  final Map<String, String> headers = _createAuthorizationTokenHeaders();
+  final Map<String, String> headers = _generateAccessTokenHeaders();
   final Map<String, dynamic> serviceResponse = await casosService.loadCasos(headers);
   _executeGeneralServiceResponseValidations(serviceResponse);
   final List<Map<String, dynamic>> casos = serviceResponse['data'].cast<Map<String, dynamic>>();
@@ -76,18 +89,18 @@ void _testCreateCaso(){
   test(_createCasoDescription, ()async{
     try{
       await _executeCreateCasoValidations();
-    }on TestFailure catch(_){
-
+    }on TestFailure catch(err){
+      throw err;
     }on ServiceStatusErr catch(err){
-      fail('succesfulRegister: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
+      fail('createCaso: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
     }catch(err){
-      fail('succesfulRegister: Ocurrió un error inesperado: ${err.toString()}');
+      fail('createCaso: Ocurrió un error inesperado: ${err.toString()}');
     }
   });
 }
 
 Future<void> _executeCreateCasoValidations()async{
-  final Map<String, dynamic> body = _generateAuthorizationTokenBody();
+  final Map<String, dynamic> body = _generateAccesTokenBody();
   final Map<String, dynamic> serviceResponse = await casosService.createCaso(body);
   _executeGeneralServiceResponseValidations(serviceResponse);
   final Map<String, dynamic> responseData = serviceResponse['data'];
@@ -103,12 +116,12 @@ void _testCreateTitulo(){
   test(_createTituloDescription, ()async{
     try{
       await _executeCreateTituloValidations();
-    }on TestFailure catch(_){
-
+    }on TestFailure catch(err){
+      throw err;
     }on ServiceStatusErr catch(err){
-      fail('succesfulRegister: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
+      fail('createTitulo: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
     }catch(err){
-      fail('succesfulRegister: Ocurrió un error inesperado: ${err.toString()}');
+      fail('createTitulo: Ocurrió un error inesperado: ${err.toString()}');
     }
   });
 }
@@ -126,12 +139,12 @@ void _testCreateDescription(){
   test(_createDescriptionDescription, ()async{
     try{
       await _executeCreateDescriptionValidations();
-    }on TestFailure catch(_){
-
+    }on TestFailure catch(err){
+      throw err;
     }on ServiceStatusErr catch(err){
-      fail('succesfulRegister: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
+      fail('createDescription: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
     }catch(err){
-      fail('succesfulRegister: Ocurrió un error inesperado: ${err.toString()}');
+      fail('createDescription: Ocurrió un error inesperado: ${err.toString()}');
     }
   });
 }
@@ -141,7 +154,7 @@ Future<void> _executeCreateDescriptionValidations()async{
   final Map<String, dynamic> serviceResponse = await casosService.createDescripcion(body);
   _executeGeneralServiceResponseValidations(serviceResponse);
   final Map<String, dynamic> responseData = serviceResponse['data'];
-  expect(responseData['descripcion'], isNotNull, reason: 'la descripción del responseData no debe ser null');
+  expect(responseData['descripcion']??responseData['desripcion'], isNotNull, reason: 'la descripción del responseData no debe ser null');
   expect(responseData['rutas'], isNotNull, reason: 'Las rutas del responseData no deben ser null');
 }
 
@@ -149,12 +162,12 @@ void _testCreateDireccion(){
   test(_createDireccionDescription, ()async{
     try{
       await _executeCreateDireccionValidations();
-    }on TestFailure catch(_){
-
+    }on TestFailure catch(err){
+      throw err;
     }on ServiceStatusErr catch(err){
-      fail('succesfulRegister: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
+      fail('createDireccion: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
     }catch(err){
-      fail('succesfulRegister: Ocurrió un error inesperado: ${err.toString()}');
+      fail('createDireccion: Ocurrió un error inesperado: ${err.toString()}');
     }
   });
 }
@@ -172,12 +185,12 @@ void _testCreateLatLong(){
   test(_createLatLongDescription, ()async{
     try{
       await _executeCreateLatLongValidations();
-    }on TestFailure catch(_){
-
+    }on TestFailure catch(err){
+      throw err;
     }on ServiceStatusErr catch(err){
-      fail('succesfulRegister: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
+      fail('createLatLong: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
     }catch(err){
-      fail('succesfulRegister: Ocurrió un error inesperado: ${err.toString()}');
+      fail('createLatLong: Ocurrió un error inesperado: ${err.toString()}');
     }
   });
 }
@@ -193,7 +206,7 @@ Future<void> _executeCreateLatLongValidations()async{
 }
 
 Map<String, dynamic> _generateCreateLatLongBody(){
-  final Map<String, dynamic> body = _generateAuthorizationTokenBody();
+  final Map<String, dynamic> body = _generateAccesTokenBody();
   body['caso_id'] = _currentCreatedCasoId;
   body['latitud'] = helpers.createUniqueNumber();
   body['longitud'] = helpers.createUniqueNumber();
@@ -201,42 +214,95 @@ Map<String, dynamic> _generateCreateLatLongBody(){
   return body;
 }
 
-//TODO: Confirmar que esté funcionando en el back
-void _testCreateEstado(){
-  test(_createDireccionDescription, ()async{
+void _testCreateTipo(){
+  test(_createTipoDescription, ()async{
     try{
-      await _executeCreateEstadoValidations();
-    }on TestFailure catch(_){
-
+      await _executeCreateTipo();
+    }on TestFailure catch(err){
+      throw err;
     }on ServiceStatusErr catch(err){
-      fail('succesfulRegister: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
+      fail('createTipo: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
     }catch(err){
-      fail('succesfulRegister: Ocurrió un error inesperado: ${err.toString()}');
+      fail('createTipo: Ocurrió un error inesperado: ${err.toString()}');
     }
   });
 }
 
-Future<void> _executeCreateEstadoValidations()async{
-  final Map<String, dynamic> serviceResponse = await casosService.createDireccion({});
+Future<void> _executeCreateTipo()async{
+  final Map<String, dynamic> body = _generateGeneralCreatePartBody('tipo');
+  final Map<String, dynamic> response = await casosService.createTipo(body);
+  _executeGeneralServiceResponseValidations(response);
+  final Map<String, dynamic> responseData = response['data'];
+  expect(responseData['tipoCaso'], isNotNull, reason: 'El tipo del response no debe ser null');
 }
 
-//TODO: Confirmar que esté funcionando en el back
 void _testCreateMultimedia(){
-  test(_createDireccionDescription, ()async{
+  test(_createMultimediaDescription, ()async{
     try{
-      await _executeCreateMultimediaValidations();
-    }on TestFailure catch(_){
-
+      await _executeCreateMultimedia();
+    }on TestFailure catch(err){
+      throw err;
     }on ServiceStatusErr catch(err){
-      fail('succesfulRegister: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
+      fail('createMultimedia: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
     }catch(err){
-      fail('succesfulRegister: Ocurrió un error inesperado: ${err.toString()}');
+      fail('createMultimedia: Ocurrió un error inesperado: ${err.toString()}');
     }
   });
 }
 
-Future<void> _executeCreateMultimediaValidations()async{
-  final Map<String, dynamic> serviceResponse = await casosService.createDireccion({});
+Future<void> _executeCreateMultimedia()async{
+  final Map<String, String> headers = {'Content-Type':'application/x-www-form-urlencoded'};
+  final Map<String, dynamic> fields = _generateAccesTokenBody().cast<String, String>();
+  fields['caso_id'] = _currentCreatedCasoId.toString();
+  fields['seleccionado'] = 'true';
+  final List<File> photos = _createPhotos();
+  final List<File> videos = _createVideos();
+  Map<String, List<File>> multimedia = {
+    'photos':photos,
+    'videos':videos
+  };
+  final Map<String, dynamic> serviceResponse = await casosService.createMultimedia(headers, fields, multimedia);
+  _executeGeneralServiceResponseValidations(serviceResponse);
+  final Map<String, dynamic> responseData = serviceResponse['data'];
+  final List<Map<String, dynamic>> responseVideos = responseData['videos'].cast<Map<String, dynamic>>();
+  expect(responseVideos, isNotNull, reason: 'El campo vídeos debería existir en el response');
+  _executeResponseFileValidations(responseVideos);
+  final List<Map<String, dynamic>> responsePhotos = responseData['fotos'].cast<Map<String, dynamic>>();
+  expect(responsePhotos, isNotNull, reason: 'El campo fotos debería existir en el response');
+  _executeResponseFileValidations(responsePhotos);
+}
+
+void _executeResponseFileValidations(List<Map<String, dynamic>> responseFiles){
+  responseFiles.forEach((Map<String, dynamic> file) {
+    expect(file['ruta'], isNotNull, reason: 'La ruta del archivo actual no debería ser null');
+    expect(file['owner'], isNotNull, reason: 'El owner del archivo actual no debería ser null');
+    expect(file['rutaCaso'], isNotNull, reason: 'La ruta del caso del archivo actual no debería ser null');
+    expect(file['rutas'], isNotNull, reason: 'El campo rutas del archivo actual no debería ser null');
+  });
+}
+
+List<File> _createPhotos(){
+  List<File> photos = [];
+  File currentPhoto;
+  _multimediaPhotosNames.forEach((String photoName) {
+    String photoPath = _multimediaPhotosBasePath + photoName;
+    currentPhoto = File(photoPath);
+    currentPhoto = currentPhoto.absolute;
+    photos.add(currentPhoto);
+  });
+  return photos;
+}
+
+List<File> _createVideos(){
+  List<File> videos = [];
+  File currentVideo;
+  _multimediaVideosNames.forEach((String videoName) {
+    String videoPath = _multimediaVideosBasePath + videoName;
+    currentVideo = File(videoPath);
+    currentVideo = currentVideo.absolute;
+    videos.add(currentVideo);
+  });
+  return videos;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////// 
@@ -248,7 +314,7 @@ Future<void> _login()async{
   _authorizationToken = serviceResponse['data']['original']['access_token'];
 }
 
-Map<String, String> _createAuthorizationTokenHeaders(){
+Map<String, String> _generateAccessTokenHeaders(){
   final Map<String, String> headers = {
     'Authorization':'Bearer $_authorizationToken'
   };
@@ -256,14 +322,14 @@ Map<String, String> _createAuthorizationTokenHeaders(){
 }
 
 Map<String, dynamic> _generateGeneralCreatePartBody(String partName){
-  Map<String, dynamic> body = _generateAuthorizationTokenBody();
+  Map<String, dynamic> body = _generateAccesTokenBody();
   body['caso_id'] = _currentCreatedCasoId;
   body['seleccionado'] = true;
   body[partName] = '$partName ${helpers.createUniqueString()}';
   return body;
 }
 
-Map<String, dynamic> _generateAuthorizationTokenBody(){
+Map<String, dynamic> _generateAccesTokenBody(){
   return {'token':_authorizationToken};
 }
 

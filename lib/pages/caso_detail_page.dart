@@ -129,8 +129,9 @@ class CasoDetailPage extends StatelessWidget {
   }
 
   Widget _crearMultimediaComponents(){
-    final List<File> multimediaFiles = _caso.multimediaItems;
-    return _MultimediaComponents(multimedia: multimediaFiles);
+    //TODO: Arreglar
+    final List multimedia = _caso.multimediaItems;
+    return _MultimediaComponents(multimedia: multimedia);
   }
 
   Widget _crearBotonAportar(){
@@ -193,12 +194,12 @@ class CasoDetailPage extends StatelessWidget {
 
 class _MultimediaComponents extends StatelessWidget {
 
-  final List<File> _multimedia;
+  final List _multimedia;
 
   SizeUtils _sizeUtils;
 
   _MultimediaComponents({
-    @required List<File> multimedia
+    @required List multimedia
   }):
     this._multimedia = multimedia
     ;
@@ -250,7 +251,7 @@ class _MultimediaComponents extends StatelessWidget {
 
   List<Widget> _crearMultimediaItems(){
     List<Widget> multimediaItems = [];
-    _multimedia.forEach((File current) {
+    _multimedia.forEach((current) {
       //TODO: implementar la verdadera instanciación del widget
       Widget item = Container(
         width: _sizeUtils.xasisSobreYasis * 0.1,
