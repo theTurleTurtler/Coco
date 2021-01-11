@@ -1,3 +1,5 @@
+import 'package:coco/blocs/casos/casos_bloc.dart';
+import 'package:coco/blocs/casos/casos_services_manager.dart';
 import 'package:coco/blocs/user/user_bloc.dart';
 import 'package:coco/blocs/user/user_services_manager.dart';
 import 'package:coco/enums/account_step.dart';
@@ -16,7 +18,9 @@ final String _refreshAccessTokenDescription = 'Se testeará el método refreshAc
 
 final BuildContext _context = MockBuildContext();
 final UserBloc _userBloc = MockUserBloc();
-final UserServicesManager _uSManager = UserServicesManager.forTesting(appContext: _context, userBloc: _userBloc);
+final CasosBloc _casosBloc = MockCasosBloc();
+final CasosServicesManager _casosServicesManager = CasosServicesManager.forTesting(appContext: _context, userBloc: _userBloc, casosBloc: _casosBloc);
+final UserServicesManager _uSManager = UserServicesManager.forTesting(appContext: _context, userBloc: _userBloc, casosServicesManager: _casosServicesManager);
 final Map<String, dynamic> _successRegisterData = {
   'name':'John ${helpers.createUniqueString()}',
   'email':'email${helpers.createUniqueString()}@gmail.com', 
@@ -33,6 +37,7 @@ void main(){
     _testRefreshAccessToken();
     _testGetUserInformation();
     _testLogout();
+    _testManageLoginProccess();
   });
 }
 
@@ -43,13 +48,13 @@ void _testRegister(){
     }on TestFailure catch(err){
       throw err;
     }catch(err){
-      fail('No debería haber ocurrido un error: $err');     
+      fail('No debería haber ocurrido un error: $err');   
     }
   });
 }
 
 Future<void> _executeRegisterValidations()async{
-  await _uSManager.register(_successRegisterData['name'], _successRegisterData['email'], _successRegisterData['password'], _successRegisterData['confirmed_password']);
+  await _uSManager.manageRegisterProcess(_successRegisterData);
   _executeAccountWithAccessTokenValidations();
 }
 
@@ -117,6 +122,24 @@ Future<void> _executeGetUserInformationValidations()async{
   expect(blocState.user, isNotNull, reason: 'El user del state debería existir');
 }
 
+void _testManageLoginProccess(){
+  test(_getUserInformationDescription, ()async{
+    try{
+      await _executeManageLoginProccessValidations();
+    }on TestFailure catch(err){
+      throw err;
+    }catch(err){
+      fail('No debería haber ocurrido un error: $err');      
+    }
+  });
+}
+
+Future<void> _executeManageLoginProccessValidations()async{
+  await _uSManager.manageLoginProccess(_successLoginData['email'], _successLoginData['password']);
+  final UserState userState = _userBloc.state;
+  expect(userState.accessToken, isNotNull, reason: 'El accessToken del debería ser logged');
+}
+
 void _testLogout(){
   test(_logoutDescription, ()async{
     try{
@@ -130,7 +153,7 @@ void _testLogout(){
 }
 
 Future<void> _executeLogoutValidations()async{
-  await _uSManager.logout();
+  await _uSManager.manageLogoutProccess();
   final UserState blocState = _userBloc.state;
   expect(blocState.accountStep, AccountStep.UNLOGGED, reason: 'Después de un logout el state debe tener un account step unlogged');
   expect(blocState.accessToken, isNull, reason: 'Después de un logout el state debe tener un accessToken null');

@@ -19,19 +19,19 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     UserEvent event,
   ) async* {
     // TODO: implement mapEventToState
-    switch(event.runtimeType){
-      case SetAccessToken:
-        _addAccessToken(event as SetAccessToken);
-        yield _currentNewState;
-      break;
-      case SetUserInformation:
-        _addUserInformation(event as SetUserInformation);
-        yield _currentNewState;
-      break;
-      case ResetUserInformation:
-        await _resetUserInformation();
-        yield _currentNewState;
-      break;
+    if(event is SetAccessToken){
+      _addAccessToken(event);
+      yield _currentNewState;
+      event.onAccessTokenYielded();
+      return;
+    }else if(event is SetUserInformation){
+      _addUserInformation(event);
+      yield _currentNewState;
+      event.onUserInformationLoaded();
+      return;
+    }else if(event is ResetUserInformation){
+      _resetUserInformation();
+      yield _currentNewState;
     }
   }
 

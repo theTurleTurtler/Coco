@@ -1,10 +1,9 @@
 import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:coco/blocs/bloc/casos_bloc.dart';
-import 'package:coco/blocs/bloc/casos_services_manager.dart';
+import 'package:coco/blocs/casos/casos_bloc.dart';
+import 'package:coco/blocs/casos/casos_services_manager.dart';
 import 'package:coco/blocs/user/user_bloc.dart';
 import 'package:coco/blocs/user/user_services_manager.dart';
 import 'mock/build_context.dart';
@@ -19,8 +18,8 @@ final Map<String, dynamic> _successLoginData = {'email':'email1@gmail.com', 'pas
 final BuildContext _context = MockBuildContext();
 final UserBloc _userBloc = MockUserBloc();
 final CasosBloc _casosBloc = MockCasosBloc();
-final UserServicesManager _uSManager = UserServicesManager.forTesting(appContext: _context, userBloc: _userBloc);
 final CasosServicesManager _cSManager = CasosServicesManager.forTesting(appContext: _context, userBloc: _userBloc, casosBloc: _casosBloc);
+final UserServicesManager _uSManager = UserServicesManager.forTesting(appContext: _context, userBloc: _userBloc, casosServicesManager: _cSManager);
 
 final String _multimediaPhotosBasePath = 'assets\\test\\multimedia_data\\photos\\';
 final List<String> _multimediaPhotosNames = [
@@ -34,7 +33,7 @@ final List<String> _multimediaVideosNames = [
 
 void main(){
   group(_testingGroupDescription, (){
-    //_testLoadCasos();
+    _testLoadCasos();
     _testCreateCaso();
   });
 }
@@ -52,7 +51,7 @@ void _testLoadCasos(){
 }
 
 Future<void> _executeLoadCasosValidations()async{
-  await _uSManager.login(_successLoginData['email'], _successLoginData['password']);
+  await _uSManager.manageLoginProccess(_successLoginData['email'], _successLoginData['password']);
   await _cSManager.loadCasos();
   final CasosState _casosState = _casosBloc.state;
   expect(_casosState.estanCargados, true, reason: 'El estado de los casos en el state debería ser cargados');
@@ -72,7 +71,7 @@ void _testCreateCaso(){
 }
 
 Future<void> _executeCreateCasoValidations()async{
-  await _uSManager.login(_successLoginData['email'], _successLoginData['password']);
+  await _uSManager.manageLoginProccess(_successLoginData['email'], _successLoginData['password']);
   final Map<String, dynamic> caso = casoDataPrueba.casoToCreate;
   final double latitud = double.parse(caso['latLong']['latitud']);
   final double longitud = double.parse(caso['latLong']['longitud']);

@@ -1,4 +1,4 @@
-import 'package:coco/blocs/bloc/casos_bloc.dart';
+import 'package:coco/blocs/casos/casos_bloc.dart';
 import 'package:coco/blocs/user/user_bloc.dart';
 import 'package:coco/enums/account_step.dart';
 import 'package:mockito/mockito.dart';

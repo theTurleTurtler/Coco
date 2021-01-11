@@ -21,7 +21,7 @@ void _executeCasoTestValidations(){
   final Caso caso = Caso.fromJson(json: casoMap);
   expect(caso.id, casoMap['id'], reason: 'El campo id del caso debe ser el mismo que el del json');
   expect(caso.titulo, casoMap['titulo']['titulo'], reason: 'El campo titulo del caso debe ser el mismo que el del json'); 
-  expect(caso.descripcion, casoMap['descripcion']['descripcion'], reason: 'El campo descripcion del caso debe ser el mismo que el del json'); 
+  expect(caso.descripcion, casoMap['descripcion']['desripcion'], reason: 'El campo descripcion del caso debe ser el mismo que el del json'); 
   expect(caso.direccion, casoMap['direccion']['direccion'], reason: 'El campo direccion del caso debe ser el mismo que el del json'); 
   expect(caso.tipoDeSolicitud, casoMap['tipo']['tipo'], reason: 'El campo tipoDeSolicitud del caso debe ser el mismo que el del json');
   final Map<String, dynamic> latLongMap = casoMap['latLong'];

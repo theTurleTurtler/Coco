@@ -1,16 +1,17 @@
 import 'package:coco/utils/size_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:coco/blocs/user/user_services_manager.dart';
 import 'package:coco/utils/static_data/navigation_utils.dart' as navigation;
-import 'package:coco/utils/services_managers/user_service_manager.dart' as userServiceManager;
 //Navegación
 // ignore: must_be_immutable
 class NavigationMenu extends StatelessWidget {
-
+  UserServicesManager _userServicesManager;
   BuildContext _context;
   SizeUtils _sizeUtils;
   //TODO: Implementar uso del _currentMenuValue
   @override
   Widget build(BuildContext context) {
+    _userServicesManager = UserServicesManager(appContext: context);
     _initInitialConfiguration(context);
     return GestureDetector(
       child: Container(
@@ -111,7 +112,7 @@ class NavigationMenu extends StatelessWidget {
         ),
       ),
       onTap: (){
-        userServiceManager.manageLogoutProccess(_context, currentItem['route']);
+        Navigator.of(_context).pushNamed(currentItem['route']);
       },
     );
   }

@@ -3,7 +3,7 @@ import 'package:coco/errors/files_management/file_format_err.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:coco/blocs/bloc/casos_bloc.dart';
+import 'package:coco/blocs/casos/casos_bloc.dart';
 import 'package:coco/blocs/user/user_bloc.dart';
 import 'package:coco/errors/services/service_status_err.dart';
 import 'package:coco/models/caso.dart';
@@ -17,7 +17,7 @@ class CasosServicesManager{
   CasosServicesManager._internal();
 
   factory CasosServicesManager({
-    BuildContext appContext
+    @required BuildContext appContext
   }){
     _initInitialElements(appContext);
     return _csManager;

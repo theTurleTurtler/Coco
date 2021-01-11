@@ -1,9 +1,9 @@
+import 'package:coco/blocs/user/user_services_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:coco/errors/services/service_status_err.dart';
 import 'package:coco/pages/register_dashboard_page.dart';
 import 'package:coco/widgets/common_widgets.dart';
 import 'package:coco/utils/size_utils.dart';
-import 'package:coco/utils/services_managers/user_service_manager.dart' as userServiceManager;
 
 // ignore: must_be_immutable
 class LoginPage extends StatelessWidget {
@@ -11,6 +11,7 @@ class LoginPage extends StatelessWidget {
 
   BuildContext _context;
   SizeUtils _sizeUtils;
+  UserServicesManager _userServicesManager;
 
   String _email = '';
   String _password = '';
@@ -31,6 +32,7 @@ class LoginPage extends StatelessWidget {
     final Size size = MediaQuery.of(_context).size;
     _sizeUtils = SizeUtils();
     _sizeUtils.initUtil(size);
+    _userServicesManager = UserServicesManager(appContext: context);
   }
 
   Widget _crearComponentes(){
@@ -170,7 +172,7 @@ class LoginPage extends StatelessWidget {
 
   void _login(){
     try{
-      userServiceManager.manageLoginProccess(_context, _email, _password);
+      _userServicesManager.manageLoginProccess(_email, _password);
     }on ServiceStatusErr catch(err){
       print('on service status error: ${err.message}');
       print(err.extraInformation);

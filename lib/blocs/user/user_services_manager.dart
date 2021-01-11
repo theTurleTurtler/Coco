@@ -1,27 +1,30 @@
+import 'package:coco/blocs/casos/casos_services_manager.dart';
 import 'package:coco/blocs/user/user_bloc.dart';
 import 'package:coco/errors/services/service_status_err.dart';
 import 'package:coco/models/user.dart';
+import 'package:coco/pages/casos_home_page.dart';
 import 'package:coco/services/user_service.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:coco/blocs/bloc/casos_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UserServicesManager{
   // ******************* Modelo Singleton
-  static final UserServicesManager _csManager = UserServicesManager._internal();
+  static final UserServicesManager _uSManager = UserServicesManager._internal();
+
   UserServicesManager._internal();
 
   factory UserServicesManager({
-    BuildContext appContext
+    @required BuildContext appContext
   }){
     _initInitialElements(appContext);
-    return _csManager;
+    return _uSManager;
   }
   
   static void _initInitialElements(BuildContext appContext){
-    if(_csManager._appContext == null){
-      _csManager.._appContext = appContext
-      .._userBloc = BlocProvider.of<UserBloc>(appContext);
+    if(_uSManager._appContext == null){
+      _uSManager.._appContext = appContext
+      .._userBloc = BlocProvider.of<UserBloc>(appContext)
+      .._cSManager = CasosServicesManager(appContext: appContext);
     }
   }
 
@@ -29,28 +32,31 @@ class UserServicesManager{
   factory UserServicesManager.forTesting({
     @required BuildContext appContext,
     @required UserBloc userBloc,
+    @required CasosServicesManager casosServicesManager
   }){
-    _initInitialTestingElements(appContext, userBloc);
-    return _csManager;
+    _initInitialTestingElements(appContext, userBloc, casosServicesManager);
+    return _uSManager;
   }
 
-  static void _initInitialTestingElements(BuildContext appContext, UserBloc userBloc){
-    if(_csManager._appContext == null){
-      _csManager.._appContext = appContext
-      .._userBloc = userBloc;
+  static void _initInitialTestingElements(BuildContext appContext, UserBloc userBloc, CasosServicesManager casosServicesManager){
+    if(_uSManager._appContext == null){
+      _uSManager.._appContext = appContext
+      .._userBloc = userBloc
+      .._cSManager = casosServicesManager;
     }
   }
   // ****************** Fin del modelo Singleton
 
   BuildContext _appContext;
   UserBloc _userBloc;
+  CasosServicesManager _cSManager;
 
-  Future<void> register(String name, String email, String password, String confirmedPassword)async{
+  Future<void> manageRegisterProcess(Map<String, dynamic> registerData)async{
     try{
-      final Map<String, dynamic> serviceBody = _generateRegisterServiceBody(name, email, password, confirmedPassword);
-      final Map<String, dynamic> response = await userService.register(serviceBody);
+      //String name, String email, String password, String confirmedPassword
+      final Map<String, dynamic> response = await userService.register(registerData);
       final String accessToken = response['data']['original']['access_token'];
-      final SetAccessToken setAccTokenEvent = SetAccessToken(accessToken: accessToken);
+      final SetAccessToken setAccTokenEvent = SetAccessToken(accessToken: accessToken, onAccessTokenYielded: _onAccessTokenYielded);
       _userBloc.add(setAccTokenEvent);
     }on ServiceStatusErr catch(err){
       print(err);
@@ -59,27 +65,27 @@ class UserServicesManager{
     }
   }
 
-  Map<String, dynamic> _generateRegisterServiceBody(String name, String email, String password, String confirmedPassword){
-    return {
-      'name':name,
-      'email':email,
-      'password':password,
-      'confirmed_password':confirmedPassword
-    };
+  Future<void> manageLoginProccess(String email, String password)async{
+    try{
+      await login(email, password);
+    }on ServiceStatusErr catch(err){
+      print(err);      
+    }catch(err){
+      print(err);
+    }
   }
 
-  Future<void> login(String email, String password)async{
-    try{
-      final Map<String, dynamic> serviceBody = _generateLoginServiceBody(email, password);
-      final Map<String, dynamic> response = await userService.login(serviceBody);
-      final String accessToken = response['data']['original']['access_token'];
-      final SetAccessToken setAccTokenEvent = SetAccessToken(accessToken: accessToken);
-      _userBloc.add(setAccTokenEvent);
-    }on ServiceStatusErr catch(err){
+  Future<void> login(String email, password)async{
+    final Map<String, dynamic> serviceBody = _generateLoginServiceBody(email, password);
+    final Map<String, dynamic> loginResponse = await userService.login(serviceBody);
+    final String accessToken = loginResponse['data']['original']['access_token'];
+    final SetAccessToken setAccTokenEvent = SetAccessToken(accessToken: accessToken, onAccessTokenYielded: _onAccessTokenYielded);
+    _userBloc.add(setAccTokenEvent);
+  }
 
-    }catch(err){
-
-    }
+  Future<void> _onAccessTokenYielded()async{
+    print('Access token: ${_userBloc.state.accessToken}');
+    await getUserInformation();
   }
 
   Map<String, dynamic> _generateLoginServiceBody(String email, String password){
@@ -95,7 +101,7 @@ class UserServicesManager{
       final Map<String, dynamic> serviceResponse = await userService.getUserInformation(body);
       final Map<String, dynamic> userMap = serviceResponse['data']['original'];
       final User user = User.fromJson(userMap);
-      final SetUserInformation setUserInformationEvent = SetUserInformation(user: user);
+      final SetUserInformation setUserInformationEvent = SetUserInformation(user: user, onUserInformationLoaded: _onUserInformationLoaded);
       _userBloc.add(setUserInformationEvent);
     }on ServiceStatusErr catch(err){
       print(err);      
@@ -104,7 +110,12 @@ class UserServicesManager{
     }
   }
 
-  Future<void> logout()async{
+  Future<void> _onUserInformationLoaded()async{
+    await _cSManager.loadCasos();
+    Navigator.of(_appContext).pushReplacementNamed(CasosHomePage.route);
+  }
+
+  Future<void> manageLogoutProccess()async{
     try{
       final Map<String, dynamic> body = _generateAccessTokenBody();
       final Map<String, dynamic> response = await userService.logout(body);
@@ -123,7 +134,7 @@ class UserServicesManager{
       };
       final Map<String, dynamic> response = await userService.refreshAccessToken(body);
       final String newAccessToken = response['data']['original']['access_token'];
-      final SetAccessToken setAccessTokenEvent = SetAccessToken(accessToken: newAccessToken);
+      final SetAccessToken setAccessTokenEvent = SetAccessToken(accessToken: newAccessToken, onAccessTokenYielded: _onAccessTokenYielded);
       _userBloc.add(setAccessTokenEvent);
     }on ServiceStatusErr catch(err){
       print(err);      

@@ -1,3 +1,4 @@
+import 'package:coco/blocs/casos/casos_bloc.dart';
 import 'package:coco/blocs/map/map_bloc.dart';
 import 'package:coco/blocs/user/user_bloc.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,8 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<MapBloc>(create: (_)=>MapBloc()),
-        BlocProvider<UserBloc>(create: (_)=>UserBloc())
+        BlocProvider<UserBloc>(create: (_)=>UserBloc()),
+        BlocProvider<CasosBloc>(create: (_)=>CasosBloc())
       ],
       child: MaterialApp(
         title: 'Material App',

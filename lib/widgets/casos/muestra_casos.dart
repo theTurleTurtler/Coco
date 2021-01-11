@@ -1,34 +1,35 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:coco/blocs/casos/casos_bloc.dart';
+import 'package:coco/blocs/user/user_bloc.dart';
+import 'package:coco/enums/account_step.dart';
 import 'package:coco/models/caso.dart';
 import 'package:coco/pages/lista_de_casos_page.dart';
 import 'package:coco/utils/size_utils.dart';
 import 'package:coco/widgets/casos/caso_card.dart';
 import 'package:coco/enums/casos_types.dart';
-import 'package:flutter/material.dart';
-import 'package:coco/utils/test/casos_lists.dart' as casos;
+
+
 // ignore: must_be_immutable
 class MuestraCasos extends StatelessWidget {
-
   final CasosTypes _casoType;
   final String _titulo;
-  final List<Caso> _casos;
   final String _rutaDeNavegacionEnBotonMas;
 
+  List<Caso> _casos;
   BuildContext _context;
   SizeUtils _sizeUtils;
 
-  MuestraCasos.abiertos():
-  _casoType = CasosTypes.Abierto,
-  _titulo = "CASOS ABIERTOS",
-  _casos = casos.casosAbiertos,
-  _rutaDeNavegacionEnBotonMas = ListaDeCasosPage.routeCasosAbiertos
-  ;
+  MuestraCasos.abiertos()
+      : _casoType = CasosTypes.Abierto,
+        _titulo = "CASOS ABIERTOS",
+        _rutaDeNavegacionEnBotonMas = ListaDeCasosPage.routeCasosAbiertos;
 
-  MuestraCasos.requerimientosEnviados():
-  _casoType = CasosTypes.RequerimientosEnviados,
-  _titulo = "REQUERIMIENTOS ENVIADOS",
-  _casos = casos.casosConRequerimientosEnviados,
-  _rutaDeNavegacionEnBotonMas = ListaDeCasosPage.routeCasosConRequerimientosAbiertos
-  ;
+  MuestraCasos.requerimientosEnviados()
+      : _casoType = CasosTypes.RequerimientosEnviados,
+        _titulo = "REQUERIMIENTOS ENVIADOS",
+        _rutaDeNavegacionEnBotonMas =
+            ListaDeCasosPage.routeCasosConRequerimientosAbiertos;
 
   @override
   Widget build(BuildContext appContext) {
@@ -45,37 +46,54 @@ class MuestraCasos extends StatelessWidget {
     );
   }
 
-  void _initInitialElements(BuildContext appContext){
+  void _initInitialElements(BuildContext appContext) {
     _context = appContext;
     _sizeUtils = SizeUtils();
   }
 
-  Widget _crearTitulo(){
+  Widget _crearTitulo() {
     return Center(
       child: Text(
         _titulo,
-        style: TextStyle(
-          fontSize: _sizeUtils.titleSize,
-          color: Colors.black54
-        ),
+        style: TextStyle(fontSize: _sizeUtils.titleSize, color: Colors.black54),
       ),
     );
   }
 
-  Widget _crearCasosCards(){
-    final List<CasoCard> casosWidgets = _definirCasosWidgets();
-    return Container(
-      height: _sizeUtils.xasisSobreYasis * 0.38,
-      width: double.infinity,
-      child: ListView(
-        children: casosWidgets,
-      )
+  Widget _crearCasosCards() {
+    return BlocBuilder<CasosBloc, CasosState>(
+      builder: (BuildContext context, CasosState casosState) {
+        return _createComponentePrincipalSegunCasosState(casosState);
+      },
     );
   }
 
-  List<CasoCard> _definirCasosWidgets(){
+  Widget _createComponentePrincipalSegunCasosState(CasosState state){
+    if(state.estanCargados) {
+      final List<CasoCard> casosWidgets = _definirCasosWidgets(state);
+      return Container(
+          height: _sizeUtils.xasisSobreYasis * 0.38,
+          width: double.infinity,
+          child: ListView(
+            children: casosWidgets,
+          ));
+    }else {
+      return _createEspacioVacio();
+    }
+  }
+
+  Widget _createEspacioVacio(){
+    return Container(
+      height: _sizeUtils.xasisSobreYasis * 0.38,
+      width: double.infinity,
+      color: Theme.of(_context).secondaryHeaderColor,
+    );
+  }
+
+  List<CasoCard> _definirCasosWidgets(CasosState state) {
+    _casos = state.casos;
     List<CasoCard> _casosWidgets = [];
-    for(int i = 0; i < 2; i++){
+    for (int i = 0; i < 2; i++) {
       final Caso caso = _casos[i];
       final CasoCard casoCard = CasoCard(caso: caso);
       _casosWidgets.add(casoCard);
@@ -83,15 +101,13 @@ class MuestraCasos extends StatelessWidget {
     return _casosWidgets;
   }
 
-  Widget _crearBotonVerMas(){
+  Widget _crearBotonVerMas() {
     return FlatButton(
       child: Text(
         'Más...',
-        style: TextStyle(
-          fontSize: _sizeUtils.subtitleSize
-        ),
+        style: TextStyle(fontSize: _sizeUtils.subtitleSize),
       ),
-      onPressed: (){
+      onPressed: () {
         Navigator.of(_context).pushNamed(_rutaDeNavegacionEnBotonMas);
       },
     );

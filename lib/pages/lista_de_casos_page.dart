@@ -1,3 +1,4 @@
+import 'package:coco/blocs/casos/casos_bloc.dart';
 import 'package:coco/widgets/casos/casos_abiertos_component.dart';
 import 'package:flutter/material.dart';
 import 'package:coco/enums/tipo_page_casos_list.dart';
@@ -5,6 +6,7 @@ import 'package:coco/utils/size_utils.dart';
 import 'package:coco/widgets/casos/casos_con_requerim_enviados_component.dart';
 import 'package:coco/widgets/casos/filtros.dart';
 import 'package:coco/widgets/header_bar/header_bar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ListaDeCasosPage extends StatefulWidget {
 
@@ -39,12 +41,28 @@ class _ListaDeCasosPageState extends State<ListaDeCasosPage> {
           children: [
             HeaderBar(),
             SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
-            _createComponenteCasosSegunTipoPage(),
+            _createComponenteSegunCargaDeCasos(),
             SizedBox(height: _sizeUtils.littleSizedBoxHeigh),
             Filtros()
           ],
         ),
       )
+    );
+  }
+
+  Widget _createComponenteSegunCargaDeCasos(){
+    return BlocBuilder<CasosBloc, CasosState>(
+      builder: (BuildContext context, CasosState state){
+        if(state.estanCargados){
+          return _createComponenteCasosSegunTipoPage();
+        }else{
+          return Container(
+            height: MediaQuery.of(context).size.height * 0.7,
+            width: MediaQuery.of(context).size.width,
+            color: Theme.of(context).secondaryHeaderColor,
+          );
+        }
+      },
     );
   }
 

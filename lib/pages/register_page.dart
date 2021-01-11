@@ -1,12 +1,13 @@
+import 'package:coco/blocs/user/user_services_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:coco/widgets/common_widgets.dart';
 import 'package:coco/utils/size_utils.dart';
-import 'package:coco/utils/services_managers/user_service_manager.dart' as userService;
 
 class RegisterPage extends StatelessWidget {
   static final String route = 'register';
   BuildContext _context;
   SizeUtils _sizeUtils;
+  UserServicesManager _userServicesManager;
 
   String _userName;
   String _email;
@@ -28,6 +29,7 @@ class RegisterPage extends StatelessWidget {
     final Size size = MediaQuery.of(_context).size;
     _sizeUtils = SizeUtils();
     _sizeUtils.initUtil(size);
+    _userServicesManager = UserServicesManager(appContext: context);
   }
 
   Widget _crearComponentes(){
@@ -258,6 +260,6 @@ class RegisterPage extends StatelessWidget {
       'password':_password,
       'confirmed_password':_confirmedPassword
     };
-    userService.manageRegisterProcess(_context, registerData);
+    _userServicesManager.manageRegisterProcess(registerData);
   }
 }
