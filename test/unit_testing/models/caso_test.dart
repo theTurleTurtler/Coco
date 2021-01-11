@@ -1,9 +1,8 @@
 import 'package:coco/models/caso.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'caso_data_prueba.dart' as data;
 
-final String _casoTestDescription = 'Se intentará crear la instanciación de un objeto caso por medio de un json';
+final String _casoTestDescription = 'Se intentará instanciar un objeto Caso por medio de un json';
 
 main(){
   test(_casoTestDescription, (){
@@ -11,12 +10,14 @@ main(){
       _executeCasoTestValidations();
     }on TestFailure catch(err){
       throw err;
+    }catch(err){
+      fail('caso: Ha ocurrido un error: $err');
     }
   });
 }
 
 void _executeCasoTestValidations(){
-  final Map<String, dynamic> casoMap = data.caso;
+  final Map<String, dynamic> casoMap = data.existingCaso;
   final Caso caso = Caso.fromJson(json: casoMap);
   expect(caso.id, casoMap['id'], reason: 'El campo id del caso debe ser el mismo que el del json');
   expect(caso.titulo, casoMap['titulo']['titulo'], reason: 'El campo titulo del caso debe ser el mismo que el del json'); 
@@ -28,5 +29,6 @@ void _executeCasoTestValidations(){
   expect(caso.latLng.longitude.toString(), latLongMap['longitud'], reason: 'El campo latLng.longitude del caso debe ser el mismo que el del json');
   expect(caso.multimediaItems, isNotNull, reason: 'El campo multimedia items debe existir');
   expect(caso.multimediaItems.length, 5 , reason: 'El campo multimedia items del caso debe tener 5 elementos');
+  expect(caso.rutas, casoMap['rutas'], reason: 'El campo rutas debe existir con sus respectivos elementos');
 }
 

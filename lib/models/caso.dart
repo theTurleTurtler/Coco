@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:meta/meta.dart';
 
@@ -15,16 +14,20 @@ class Caso{
   //TODO: Implementar después de que funcione en el back
   _PartWithBoolValue _conoceDatosDeEntidadDestino;
 
+  Map<String, String> rutas;
+
   Caso.fromJson({
     @required Map<String, dynamic> json
   }){
     this.id = json['id'];
     this._tipoDeSolicitud = _PartWithStringValue(data: json['tipo'], partName: 'tipo');
     this._titulo = _PartWithStringValue(data: json['titulo'], partName: 'titulo');
-    this._descripcion = _PartWithStringValue(data: json['descripcion'], partName: 'descripcion');
+    //desripcion porque así viene del back
+    this._descripcion = _PartWithStringValue(data: json['descripcion'], partName: 'desripcion');
     this._direccion = _PartWithStringValue(data: json['direccion'], partName: 'direccion');    
     this._latLong = _LatLongPart(data: json['latLong']);
     _initMultimediaItems(json['multimedia']);
+    this.rutas = (json['rutas']??{} ).cast<String, String>();
   }
 
   void _initMultimediaItems(dynamic multimediaItemsMap){
@@ -108,8 +111,8 @@ class _LatLongPart extends _CasoPart{
   }){
     if(data.runtimeType != String){
       this.hasValue = true;
-      this.latitud = double.parse(data['latitud']);
-      this.longitud = double.parse(data['longitud']);
+      this.latitud = double.parse(data['latitud'].toString());
+      this.longitud = double.parse(data['longitud'].toString());
     }else{
       this.hasValue = false;
       this.withoutValueMessage = data;

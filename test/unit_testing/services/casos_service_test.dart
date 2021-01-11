@@ -100,7 +100,7 @@ void _testCreateCaso(){
 }
 
 Future<void> _executeCreateCasoValidations()async{
-  final Map<String, dynamic> body = _generateAccesTokenBody();
+  final Map<String, dynamic> body = _generateAccessTokenBody();
   final Map<String, dynamic> serviceResponse = await casosService.createCaso(body);
   _executeGeneralServiceResponseValidations(serviceResponse);
   final Map<String, dynamic> responseData = serviceResponse['data'];
@@ -206,7 +206,7 @@ Future<void> _executeCreateLatLongValidations()async{
 }
 
 Map<String, dynamic> _generateCreateLatLongBody(){
-  final Map<String, dynamic> body = _generateAccesTokenBody();
+  final Map<String, dynamic> body = _generateAccessTokenBody();
   body['caso_id'] = _currentCreatedCasoId;
   body['latitud'] = helpers.createUniqueNumber();
   body['longitud'] = helpers.createUniqueNumber();
@@ -252,7 +252,7 @@ void _testCreateMultimedia(){
 
 Future<void> _executeCreateMultimedia()async{
   final Map<String, String> headers = {'Content-Type':'application/x-www-form-urlencoded'};
-  final Map<String, dynamic> fields = _generateAccesTokenBody().cast<String, String>();
+  final Map<String, String> fields = _generateAccessTokenBody().cast<String, String>();
   fields['caso_id'] = _currentCreatedCasoId.toString();
   fields['seleccionado'] = 'true';
   final List<File> photos = _createPhotos();
@@ -322,14 +322,14 @@ Map<String, String> _generateAccessTokenHeaders(){
 }
 
 Map<String, dynamic> _generateGeneralCreatePartBody(String partName){
-  Map<String, dynamic> body = _generateAccesTokenBody();
+  Map<String, dynamic> body = _generateAccessTokenBody();
   body['caso_id'] = _currentCreatedCasoId;
   body['seleccionado'] = true;
   body[partName] = '$partName ${helpers.createUniqueString()}';
   return body;
 }
 
-Map<String, dynamic> _generateAccesTokenBody(){
+Map<String, dynamic> _generateAccessTokenBody(){
   return {'token':_authorizationToken};
 }
 
