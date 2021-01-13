@@ -1,7 +1,8 @@
+import 'package:coco/blocs/multimedia_container/multimedia_container_bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:coco/blocs/casos/casos_bloc.dart';
 import 'package:coco/blocs/map/map_bloc.dart';
 import 'package:coco/blocs/user/user_bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:coco/pages/apertura_exitosa_de_caso_page.dart';
 import 'package:coco/pages/caso_detail_page.dart';
 import 'package:coco/pages/casos_home_page.dart';
@@ -22,12 +23,13 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<MapBloc>(create: (_)=>MapBloc()),
         BlocProvider<UserBloc>(create: (_)=>UserBloc()),
-        BlocProvider<CasosBloc>(create: (_)=>CasosBloc())
+        BlocProvider<CasosBloc>(create: (_)=>CasosBloc()),
+        BlocProvider<MultimediaContainerBloc>(create: (_)=>MultimediaContainerBloc())
       ],
       child: MaterialApp(
         title: 'Material App',
         debugShowCheckedModeBanner: false,
-        initialRoute: LoginPage.route,
+        initialRoute: CasosHomePage.route,
         theme: ThemeData(
           primaryColor: Color.fromRGBO(14, 130, 167, 1),
           backgroundColor: Color.fromRGBO(245, 245, 245, 1),

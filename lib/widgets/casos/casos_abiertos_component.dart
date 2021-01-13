@@ -1,8 +1,9 @@
+import 'package:coco/blocs/casos/casos_bloc.dart';
 import 'package:coco/models/caso.dart';
 import 'package:coco/widgets/casos/caso_card.dart';
 import 'package:flutter/material.dart';
 import 'package:coco/utils/size_utils.dart';
-import 'package:coco/utils/test/casos_lists.dart' as casos;
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CasosAbiertosComponent extends StatelessWidget {
 
@@ -53,14 +54,16 @@ class CasosAbiertosComponent extends StatelessWidget {
     return Container(
       height: _sizeUtils.xasisSobreYasis * _heightPercentage,
       child: ListView(
+        reverse: true,
         children: casosWidgets,
       )
     );
   }
 
   List<CasoCard> _definirCasosWidgets(){
+    final CasosState casosState = BlocProvider.of<CasosBloc>(_context).state;
     List<CasoCard> _casosWidgets = [];
-    casos.casosAbiertos.forEach((Caso caso) {
+    casosState.casos.forEach((Caso caso) {
       final CasoCard casoCard = CasoCard(caso: caso);
       _casosWidgets.add(casoCard);
     });

@@ -11,6 +11,7 @@ import 'mock/blocs.dart';
 import '../models/caso_data_prueba.dart' as casoDataPrueba;
 
 final String _testingGroupDescription = 'Se probarán métodos de user services manager.';
+final String _loadPublicCasosDescription = 'Se testeará el método loadPublicCasos';
 final String _loadCasosDescription = 'Se testeará el método loadCasos';
 final String _createCasoDescription = 'Se testeará el método createCaso';
 
@@ -33,9 +34,29 @@ final List<String> _multimediaVideosNames = [
 
 void main(){
   group(_testingGroupDescription, (){
+    _testLoadPublicCasos();
     _testLoadCasos();
     _testCreateCaso();
   });
+}
+
+void _testLoadPublicCasos(){
+  test(_loadPublicCasosDescription, ()async{
+    try{
+      await _executeLoadPublicCasosValidations();
+    }on TestFailure catch(err){
+      throw err;
+    }catch(err){
+      fail('No debería haber ocurrido un error: $err');     
+    }
+  });
+}
+
+Future<void> _executeLoadPublicCasosValidations()async{
+  await _cSManager.loadPublicCasos();
+  final CasosState _casosState = _casosBloc.state;
+  expect(_casosState.estanCargados, true, reason: 'El estado de los casos en el state debería ser cargados');
+  expect(_casosState.casos, isNotNull, reason: 'Debe haber casos instanciados en el state');
 }
 
 void _testLoadCasos(){

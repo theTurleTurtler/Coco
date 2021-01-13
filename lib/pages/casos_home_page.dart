@@ -4,7 +4,6 @@ import 'package:coco/widgets/header_bar/header_bar.dart';
 import 'package:flutter/material.dart';
 
 class CasosHomePage extends StatelessWidget {
-
   static final route = 'casos';
 
   BuildContext _context;

@@ -1,14 +1,15 @@
+import 'package:coco/blocs/casos/casos_services_manager.dart';
+import 'package:coco/blocs/user/user_bloc.dart';
+import 'package:coco/enums/account_step.dart';
+import 'package:coco/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:coco/blocs/casos/casos_bloc.dart';
-import 'package:coco/blocs/user/user_bloc.dart';
-import 'package:coco/enums/account_step.dart';
 import 'package:coco/models/caso.dart';
 import 'package:coco/pages/lista_de_casos_page.dart';
 import 'package:coco/utils/size_utils.dart';
 import 'package:coco/widgets/casos/caso_card.dart';
 import 'package:coco/enums/casos_types.dart';
-
 
 // ignore: must_be_immutable
 class MuestraCasos extends StatelessWidget {
@@ -19,6 +20,7 @@ class MuestraCasos extends StatelessWidget {
   List<Caso> _casos;
   BuildContext _context;
   SizeUtils _sizeUtils;
+  CasosServicesManager _casosServicesManager;
 
   MuestraCasos.abiertos()
       : _casoType = CasosTypes.Abierto,
@@ -49,6 +51,7 @@ class MuestraCasos extends StatelessWidget {
   void _initInitialElements(BuildContext appContext) {
     _context = appContext;
     _sizeUtils = SizeUtils();
+    _casosServicesManager = CasosServicesManager(appContext: appContext);
   }
 
   Widget _crearTitulo() {
@@ -62,24 +65,22 @@ class MuestraCasos extends StatelessWidget {
 
   Widget _crearCasosCards() {
     return BlocBuilder<CasosBloc, CasosState>(
-      builder: (BuildContext context, CasosState casosState) {
-        return _createComponentePrincipalSegunCasosState(casosState);
+      builder: (BuildContext context, CasosState state) {
+        if(state.estanCargados) {
+          final List<CasoCard> casosWidgets = _definirCasosWidgets(state);
+          return Container(
+            height: _sizeUtils.xasisSobreYasis * 0.38,
+            width: double.infinity,
+            child: ListView(
+              children: casosWidgets,
+            )
+          );
+        }else {
+          _casosServicesManager.loadPublicCasos();
+          return _createEspacioVacio();
+        }
       },
     );
-  }
-
-  Widget _createComponentePrincipalSegunCasosState(CasosState state){
-    if(state.estanCargados) {
-      final List<CasoCard> casosWidgets = _definirCasosWidgets(state);
-      return Container(
-          height: _sizeUtils.xasisSobreYasis * 0.38,
-          width: double.infinity,
-          child: ListView(
-            children: casosWidgets,
-          ));
-    }else {
-      return _createEspacioVacio();
-    }
   }
 
   Widget _createEspacioVacio(){
@@ -108,7 +109,11 @@ class MuestraCasos extends StatelessWidget {
         style: TextStyle(fontSize: _sizeUtils.subtitleSize),
       ),
       onPressed: () {
-        Navigator.of(_context).pushNamed(_rutaDeNavegacionEnBotonMas);
+        final UserBloc userBloc = BlocProvider.of<UserBloc>(_context);
+        if(userBloc.state.accountStep == AccountStep.LOGGED)
+          Navigator.of(_context).pushNamed(_rutaDeNavegacionEnBotonMas);
+        else
+          Navigator.of(_context).pushNamed(LoginPage.route);
       },
     );
   }

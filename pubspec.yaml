@@ -34,12 +34,14 @@ dependencies:
   google_maps_flutter: ^0.5.33
   #para servicios de google(google direction, google geocodinc(conversión dir. a  loc.), etc...)
   google_maps_webservice: ^0.0.17
-  #Para el manejo de archivos multimedia, como fotos
-  image_picker: ^0.6.7+17
+  #Para la carga de fotos (¿también de videos?)
+  image_picker: ^0.6.7+21
   #para usar mockito en testing
   mockito: ^4.1.3
   #para saber la extensión de un archivo
   mime_type: ^0.3.2
+  #para mostrar videos en widgets
+  video_player: ^1.0.1
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3

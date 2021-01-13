@@ -1,7 +1,11 @@
+import 'package:coco/blocs/user/user_bloc.dart';
+import 'package:coco/enums/account_step.dart';
 import 'package:coco/models/caso.dart';
+import 'package:coco/pages/login_page.dart';
 import 'package:coco/pages/modificar_caso_page.dart';
 import 'package:coco/utils/size_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CasoCard extends StatelessWidget {
 
@@ -27,8 +31,11 @@ class CasoCard extends StatelessWidget {
         child: _createCardComponents()
       ),
       onTap: (){
-        //Navigator.of(context).pushReplacementNamed(CasoDetailPage.route, arguments: _caso);
-        Navigator.of(context).pushReplacementNamed(ModificarCasoPage.routeAportar, arguments: _caso);
+        final UserBloc userBloc = BlocProvider.of<UserBloc>(context);
+        if(userBloc.state.accountStep == AccountStep.LOGGED)
+          Navigator.of(context).pushNamed(ModificarCasoPage.routeAportar, arguments: _caso);
+        else
+          Navigator.of(context).pushNamed(LoginPage.route);
       },
     );
   }
@@ -80,9 +87,7 @@ class CasoCard extends StatelessWidget {
   Widget _createLeftTopFragment(){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _createNombreUsuario(),
-        _createDireccion(),
+      children:[   
         _createFecha()
       ]
     );
@@ -91,19 +96,9 @@ class CasoCard extends StatelessWidget {
   Widget _createRightTopFragment(){
     return Row(
       children:[
-        _createMainMultimedia(),
         SizedBox(width: _sizeUtils.xasisSobreYasis * 0.02),
         _createCirculoDeEstado()
       ]
-    );
-  }
-
-  Widget _createNombreUsuario(){
-    return Text(
-      'Elsa Camuelas',
-      style: TextStyle(
-        fontSize: _sizeUtils.subtitleSize
-      ),
     );
   }
 
@@ -121,7 +116,7 @@ class CasoCard extends StatelessWidget {
     return Text(
       stringDate,
       style: TextStyle(
-        fontSize: _sizeUtils.littleTextSize
+        fontSize: _sizeUtils.normalTextSize
       ),
     );
   }

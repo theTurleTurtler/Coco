@@ -1,13 +1,18 @@
+import 'package:coco/blocs/user/user_bloc.dart';
+import 'package:coco/enums/account_step.dart';
+import 'package:coco/pages/login_page.dart';
 import 'package:coco/utils/size_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:coco/blocs/user/user_services_manager.dart';
 import 'package:coco/utils/static_data/navigation_utils.dart' as navigation;
+import 'package:flutter_bloc/flutter_bloc.dart';
 //Navegación
 // ignore: must_be_immutable
 class NavigationMenu extends StatelessWidget {
   UserServicesManager _userServicesManager;
   BuildContext _context;
   SizeUtils _sizeUtils;
+  UserBloc _userBloc;
   //TODO: Implementar uso del _currentMenuValue
   @override
   Widget build(BuildContext context) {
@@ -24,7 +29,10 @@ class NavigationMenu extends StatelessWidget {
         decoration: _crearButtonDecoration(),
       ),
       onTap: (){
-        _ejecutarMenu();
+        if(_userBloc.state.accountStep == AccountStep.LOGGED)
+          _ejecutarMenu();
+        else
+          Navigator.of(context).pushNamed(LoginPage.route);
       },
     );
   }
@@ -48,6 +56,7 @@ class NavigationMenu extends StatelessWidget {
     final Size size = MediaQuery.of(_context).size;
     _sizeUtils = SizeUtils();
     _sizeUtils.initUtil(size);
+    _userBloc = BlocProvider.of<UserBloc>(context);
   }
 
   Future<void> _ejecutarMenu()async{
@@ -111,11 +120,17 @@ class NavigationMenu extends StatelessWidget {
           ),
         ),
       ),
-      onTap: (){
+      onTap: ()async{
+        if(currentItem['name'] == 'Salir')
+          await _userServicesManager.manageLogoutProccess();
         Navigator.of(_context).pushNamed(currentItem['route']);
       },
     );
   }
+}
+
+Future<void> _onMenuItemTap()async{
+  
 }
 
 BoxDecoration _createPopUpMenuItemChildDecoration(String route){

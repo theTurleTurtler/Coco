@@ -1,4 +1,9 @@
+import 'dart:io';
+import 'package:coco/blocs/casos/casos_services_manager.dart';
+import 'package:coco/blocs/multimedia_container/multimedia_container_bloc.dart';
+import 'package:coco/widgets/multimedia/multimedia_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:coco/blocs/map/map_bloc.dart';
 import 'package:coco/enums/tipo_widget_caso_form.dart';
 import 'package:coco/models/caso.dart';
@@ -7,8 +12,9 @@ import 'package:coco/pages/casos_home_page.dart';
 import 'package:coco/widgets/google_maps/little_static_map.dart';
 import 'package:coco/utils/size_utils.dart';
 import 'package:coco/widgets/header_bar/header_bar.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:coco/utils/static_data/strings_utils.dart' as strings;
+import 'package:coco/utils/dialogs.dart' as dialogs;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 /**
  * Tiene tres constructores debido a que se deben implementar tres vistas
  * distintas (crear, editar, proponer), pero con los mismos componentes, 
@@ -53,6 +59,7 @@ class ModificarCasoPage extends StatefulWidget {
 class _ModificarCasoPageState extends State<ModificarCasoPage> {
   BuildContext _context;
   SizeUtils _sizeUtils;
+  CasosServicesManager _casosServicesManager;
   String _submitNavigationRoute;
   String _title;
 
@@ -64,6 +71,7 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
   String _tituloCaso = '';
   String _descripcionCaso = '';
   String _direccion = '';
+  List<File> _multimediaItems = [];
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +89,7 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
   void _initInitialConfiguration(BuildContext context){
     _context = context;
     _sizeUtils = SizeUtils();
+    _casosServicesManager = CasosServicesManager(appContext: context);
     if(widget._isAlreadyCreated){
       _initCaso();
       _initInitialInputValues();
@@ -147,9 +156,11 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
           SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
           _crearGoogleMapsComponent(),
           SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
-          _crearBotonAdjuntar(),
+          _createBotonAdjuntar(),
           SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
-          _crearBotonSubmit()
+          MultimediaContainer(),
+          SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
+          _createBotonSubmit()
         ],
       ),
     );
@@ -334,6 +345,9 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
           enabledBorder: _crearDescripcionInputBorder(),
           focusedBorder: _crearDescripcionInputBorder()
         ),
+        onChanged: (String newValue){
+          _descripcionCaso = newValue;
+        },
       ),
     );
   }
@@ -375,6 +389,7 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
       final MapBloc mapaBloc = BlocProvider.of<MapBloc>(context);
       final UpdatePositionFromStringDirection event = UpdatePositionFromStringDirection(direction: _direccion);
       mapaBloc.add(event);
+      FocusScope.of(context).requestFocus(new FocusNode());
     }
   }
 
@@ -416,14 +431,13 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
     return LittleStaticMap(heightPercentage: 0.45);
   }
 
-  Widget _crearBotonAdjuntar(){
+  Widget _createBotonAdjuntar(){
     return Container(
       width: _sizeUtils.xasisSobreYasis * 0.38,
       child: MaterialButton(
         elevation: 0,
         padding: _createBotonAdjuntarPadding(),
         color: Colors.grey.withOpacity(0.4),
-        
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -431,11 +445,28 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
             _createBotonAdjuntarText()
           ],
         ),
-        onPressed: (){
-
-        },
+        onPressed: _onPressAdjuntar,
       ),
     );
+  }
+
+  void _onPressAdjuntar()async{
+    try{
+      final MultimediaContainerBloc mCBloc = BlocProvider.of<MultimediaContainerBloc>(_context);
+      final Map<String, File> loadedFile = {};
+      await dialogs.executeLoadFile(_context, loadedFile);
+      final File newFile = loadedFile['file'];
+      if(newFile == null)
+        return;
+      final SetMultimediaItem setMultiMedItemEvent = SetMultimediaItem(item: newFile, onFileFormatErr: _onFileFormatErr);
+      mCBloc.add(setMultiMedItemEvent);
+    }catch(err){
+      print(err);
+    }
+  }
+
+  void _onFileFormatErr({String fileName}){
+    print('El archivo $fileName no cumple con los formatos aceptados por la app');
   }
 
   EdgeInsets _createBotonAdjuntarPadding(){
@@ -469,11 +500,7 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
     );
   }
 
-  void _pressAdjuntar(){
-
-  }
-
-  Widget _crearBotonSubmit(){
+  Widget _createBotonSubmit(){
     final Map<String, double> padding = _sizeUtils.largeFlatButtonPadding;
     return MaterialButton(
       color: Theme.of(context).primaryColor,
@@ -486,9 +513,17 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
           fontSize: _sizeUtils.xasisSobreYasis * 0.025
         ),
       ),
-      onPressed: (){
-        Navigator.of(context).pushReplacementNamed(_submitNavigationRoute);
-      },
+      onPressed: _submit,
     );
+  }
+
+  Future<void> _submit()async{
+    final MapBloc mapBloc = BlocProvider.of<MapBloc>(context);
+    final MultimediaContainerBloc mCBloc = BlocProvider.of<MultimediaContainerBloc>(context);
+    final LatLng mapPosition = mapBloc.state.currentPosition;
+    await _casosServicesManager.createCaso(titulo: _tituloCaso, descripcion: _descripcionCaso, 
+                                          direccion: _direccion, latLng: mapPosition, tipo: _tipoDeSolicitud, multimedia: mCBloc.state.items, 
+                                          conoceDatosDeEntidadDestino: _selectedConoceDatosEntidadDestinoElements[0]);
+    Navigator.of(context).pushReplacementNamed(_submitNavigationRoute);
   }
 }

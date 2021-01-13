@@ -1,8 +1,10 @@
+import 'package:coco/blocs/casos/casos_bloc.dart';
 import 'package:coco/models/caso.dart';
 import 'package:flutter/material.dart';
 import 'package:coco/utils/size_utils.dart';
 import 'package:coco/widgets/casos/caso_card.dart';
 import 'package:coco/utils/test/casos_lists.dart' as casos;
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CasosConRequerimEnviadosComponent extends StatelessWidget {
 
@@ -61,7 +63,8 @@ class CasosConRequerimEnviadosComponent extends StatelessWidget {
 
   List<Widget> _definirCasosWidgets(){
     List<Widget> _casosWidgets = [];
-    List<Caso> casosConReqEnviados = casos.casosConRequerimientosEnviados;
+    final CasosBloc casosBloc = BlocProvider.of<CasosBloc>(_context);
+    List<Caso> casosConReqEnviados = casosBloc.state.casos;
     for(int i = 0; i < casosConReqEnviados.length; i++){
       final Caso currentCaso = casosConReqEnviados[i];
       final CasoCard currentCasoCard = CasoCard(caso: currentCaso);

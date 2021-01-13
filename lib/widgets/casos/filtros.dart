@@ -35,7 +35,7 @@ class _FiltrosState extends State<Filtros> {
   Widget _crearSelectFiltro(){
     final List<String> items = strings.casosFiltros;
     return Container(
-      width: _sizeUtils.xasisSobreYasis * 0.32,
+      width: _sizeUtils.xasisSobreYasis * 0.28,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -54,7 +54,7 @@ class _FiltrosState extends State<Filtros> {
   Widget _crearSelectOrden(){
     final List<String> items = strings.casosOrdenes;
     return Container(
-      width: _sizeUtils.xasisSobreYasis * 0.32,
+      width: _sizeUtils.xasisSobreYasis * 0.29,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [

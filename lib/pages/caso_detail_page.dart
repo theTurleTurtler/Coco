@@ -7,6 +7,7 @@ import 'package:coco/widgets/header_bar/header_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 
+// ignore: must_be_immutable
 class CasoDetailPage extends StatelessWidget {
 
   static final route = 'caso_detail';

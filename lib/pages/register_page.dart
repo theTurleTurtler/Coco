@@ -65,7 +65,7 @@ class RegisterPage extends StatelessWidget {
   Widget _crearTitulo(){
     return Center(
       child: Text(
-        'REGÍSTRATE',
+        'REGISTRATE',
         textAlign: TextAlign.justify,
         style: TextStyle(
           fontSize: _sizeUtils.titleSize,
@@ -248,7 +248,7 @@ class RegisterPage extends StatelessWidget {
       'REGISTRARSE',
       style: TextStyle(
         color: Colors.white,
-        fontSize: _sizeUtils.littleTitleSize * 0.95
+        fontSize: _sizeUtils.littleTitleSize * 0.875
       ),
     );
   }

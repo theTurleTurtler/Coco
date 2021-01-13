@@ -3,7 +3,7 @@ part of 'map_bloc.dart';
 @immutable
 class MapState {
   final LatLng currentPosition;
-  final bool withMarker;
+  final bool hasMarker;
   final bool draggableMarker;
   
   MapState({
@@ -12,7 +12,7 @@ class MapState {
     bool draggableMarker
   }):
     this.currentPosition = currentPosition??null,
-    this.withMarker = withMarker??true,
+    this.hasMarker = withMarker??true,
     this.draggableMarker = draggableMarker??true
     ;
 
@@ -22,7 +22,7 @@ class MapState {
     bool draggableMarker
   }) => MapState(
     currentPosition: currentPosition??this.currentPosition,
-    withMarker: withMarker??this.withMarker,
+    withMarker: withMarker??this.hasMarker,
     draggableMarker: draggableMarker??this.draggableMarker
   );
 }

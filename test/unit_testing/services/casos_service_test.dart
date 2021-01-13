@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:coco/errors/services/service_status_err.dart';
 import 'package:coco/services/casos_service.dart';
@@ -7,6 +6,7 @@ import 'package:coco/services/user_service.dart';
 import '../../testing_helpers.dart' as helpers;
 
 final String _testingGroupDescription = 'Se ejecutarán métodos de servicios de casos.';
+final String _loadPublicCasosDescription = 'Se testeará método del servicio de cargar casos públicos.';
 final String _loadCasosDescription = 'Se testeará método del servicio de cargar casos.';
 final String _createCasoDescription = 'Se testeará método del servicio de crear caso.';
 final String _createTituloDescription = 'Se testeará método del servicio de crear titulo.';
@@ -37,6 +37,7 @@ int _currentCreatedCasoId;
 
 void main(){
   group(_testingGroupDescription, (){
+    _testLoadPublicCasos();
     _testLoadCasos();
     _testCreateCaso();
     _testCreateTitulo();
@@ -51,6 +52,27 @@ void main(){
 ///////////////////////////////////////////////////////////////////////////////////// 
 // ---------------->             Carga               <------------------------
 ///////////////////////////////////////////////////////////////////////////////////// 
+
+void _testLoadPublicCasos(){
+  test(_loadPublicCasosDescription, ()async{
+    try{
+      await _executeLoadPublicCasosValidations();
+    }on TestFailure catch(err){
+      throw err;
+    }on ServiceStatusErr catch(err){
+      fail('loadCasos: No debería ocurrir un ServiceStatusErr: ${err.status} || ${err.extraInformation}');
+    }catch(err){
+      fail('loadCasos: Ocurrió un error inesperado: ${err.toString()}');
+    }
+  });
+}
+
+Future<void> _executeLoadPublicCasosValidations()async{
+  final Map<String, dynamic> serviceResponse = await casosService.loadPublicCasos();
+  _executeGeneralServiceResponseValidations(serviceResponse);
+  final List<Map<String, dynamic>> casos = serviceResponse['data'].cast<Map<String, dynamic>>();
+  _executeCasosValidations(casos);
+}
 
 void _testLoadCasos(){
   test(_loadCasosDescription, ()async{

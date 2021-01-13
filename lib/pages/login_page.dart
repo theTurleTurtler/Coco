@@ -172,6 +172,7 @@ class LoginPage extends StatelessWidget {
 
   void _login(){
     try{
+      _userServicesManager.appContext = _context;
       _userServicesManager.manageLoginProccess(_email, _password);
     }on ServiceStatusErr catch(err){
       print('on service status error: ${err.message}');

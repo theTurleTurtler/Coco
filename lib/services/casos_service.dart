@@ -5,10 +5,17 @@ import 'package:http/http.dart' as http;
 class CasosService extends BasicService{
   final String _panelUrl = BasicService.apiUrl + 'panel/';
 
+  Future<Map<String, dynamic>> loadPublicCasos()async{
+    final String requestUrl = BasicService.apiUrl + 'public/casos';
+    final Map<String, Map<String, dynamic>> headersAndBody = createHeadersAndBodyForARequest();
+    await executeGeneralEndOfRequest(requestType: RequestType.GET, headersAndBody: headersAndBody, requestUrl: requestUrl);
+    return currentResponseBody;
+  }
+  
   Future<Map<String, dynamic>> loadCasos(Map<String, String> headers)async{
     final String requestUrl = _panelUrl + 'casos';
     final Map<String, Map<String, dynamic>> headersAndBody = createHeadersAndBodyForARequest(headers: headers);
-    await executeGeneralEndOfRequest(headersAndBody: headersAndBody, requestUrl: requestUrl, requestType: RequestType.GET);
+    await executeGeneralEndOfRequest(requestType: RequestType.GET, headersAndBody: headersAndBody, requestUrl: requestUrl);
     return currentResponseBody;
   }
 

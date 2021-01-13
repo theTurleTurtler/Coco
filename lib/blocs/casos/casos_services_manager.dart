@@ -50,13 +50,15 @@ class CasosServicesManager{
   }
   // ****************** Fin del modelo Singleton
 
+  final List<String> _formatosFotos = ['jpg', 'jpeg', 'png'];
+  final List<String> _formatosVideos = ['mp4'];
   BuildContext _appContext;
   CasosBloc _casosBloc;
   UserBloc _userBloc;
   int _currentCreatedCaseId;
   Map<String, dynamic> _currentCreatedCaseMap;
-  final List<String> _formatosFotos = ['jpg', 'jpeg', 'png'];
-  final List<String> _formatosVideos = ['mp4'];
+  bool _loadingCasos = false;
+
 
   Future<void> createCaso({@required String titulo, @required String descripcion, @required String direccion, 
                            @required LatLng latLng, @required String tipo, @required List<File> multimedia, 
@@ -71,9 +73,9 @@ class CasosServicesManager{
       await _createDireccionCaso(direccion);   
       await _createLagLngCaso(latLng.latitude, latLng.longitude); 
       await _createMultimedia(multimedia);
-      _assertNewCaso(multimedia);
+      //_assertNewCaso(multimedia);
       await loadCasos();
-      _currentCreatedCaseMap = null;
+      _currentCreatedCaseMap = null; 
     }on ServiceStatusErr catch(err){
       print(err);
     }catch(err){
@@ -156,24 +158,36 @@ class CasosServicesManager{
     throw FileFormatErr(fileName: fileName);
   }
 
-  void _assertNewCaso(List<File> multimediaItems){
-    final Caso newCaso = Caso.fromJson(json: _currentCreatedCaseMap);
-    assert(newCaso.id == _currentCreatedCaseId, 'El id del objeto retornado debe ser igual al id que se retornó en la primer petición de createCaso');
-    assert(newCaso.titulo != null, 'El campo titulo no debe ser null');
-    assert(newCaso.descripcion != null, 'El campo descripcion no debe ser null');
-    assert(newCaso.tipoDeSolicitud != null, 'El campo tipoDeSolicitud no debe ser null');
-    assert(newCaso.direccion != null, 'El campo direccion no debe ser null');
-    assert(newCaso.latLng != null, 'El campo latLng no debe ser null');
+  Future<void> loadPublicCasos()async{
+    try{
+      if(_loadingCasos)
+        return;
+      _loadingCasos = true;
+      final Map<String, dynamic> serviceResponse = await casosService.loadPublicCasos();
+      final List<Map<String, dynamic>> casosMap = serviceResponse['data'].cast<Map<String, dynamic>>();
+      final List<Caso> casos = casosMap.map<Caso>((Map<String, dynamic> casoMap) => Caso.fromJson(json: casoMap)).toList();
+      final SetCasos setCasosEvent = SetCasos(casos: casos);
+      _casosBloc.add(setCasosEvent);
+      _loadingCasos = false;
+    }on ServiceStatusErr catch(err){
+      print(err);
+    }catch(err){
+      print(err);
+    }
   }
 
   Future<void> loadCasos()async{
     try{
+      if(_loadingCasos)
+        return;
+      _loadingCasos = true;
       final Map<String, String> serviceHeaders = _generateAccessTokenHeaders();
       final Map<String, dynamic> serviceResponse = await casosService.loadCasos(serviceHeaders);
       final List<Map<String, dynamic>> casosMap = serviceResponse['data'].cast<Map<String, dynamic>>();
       final List<Caso> casos = casosMap.map<Caso>((Map<String, dynamic> casoMap) => Caso.fromJson(json: casoMap)).toList();
       final SetCasos setCasosEvent = SetCasos(casos: casos);
       _casosBloc.add(setCasosEvent);
+      _loadingCasos = false;
     }on ServiceStatusErr catch(err){
       print(err);
     }catch(err){

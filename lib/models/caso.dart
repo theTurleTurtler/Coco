@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 
 class Caso{
   int id;
-  DateTime fechaPublicacion;
+  DateTime _fechaPublicacion;
   String estado;
   _PartWithStringValue _tipoDeSolicitud;
   _PartWithStringValue _titulo;
@@ -20,6 +20,8 @@ class Caso{
     @required Map<String, dynamic> json
   }){
     this.id = json['id'];
+    _initFechaPublicacion(json['create_at']);
+    this.estado = json['estado'];
     this._tipoDeSolicitud = _PartWithStringValue(data: json['tipo'], partName: 'tipo');
     this._titulo = _PartWithStringValue(data: json['titulo'], partName: 'titulo');
     //desripcion porque así viene del back
@@ -28,6 +30,16 @@ class Caso{
     this._latLong = _LatLongPart(data: json['latLong']);
     _initMultimediaItems(json['multimedia']);
     this.rutas = (json['rutas']??{} ).cast<String, String>();
+  }
+
+  void _initFechaPublicacion(String fecha){
+    if(fecha == null)
+      return;
+    fecha = fecha.split('|')[0];
+    fecha = fecha.trim();
+    final List<String> partesFechaEnString = fecha.split('-');
+    final List<int> partesFecha = partesFechaEnString.map((String partFecha) => int.parse(partFecha)).toList();
+    this._fechaPublicacion = DateTime(partesFecha[0], partesFecha[1], partesFecha[2]);
   }
 
   void _initMultimediaItems(dynamic multimediaItemsMap){
@@ -52,8 +64,18 @@ class Caso{
   String get tipoDeSolicitud => this._tipoDeSolicitud.value;
   String get descripcion => this._descripcion.value;
   String get direccion => this._direccion.value;
-  bool get conoceDatosDeEntidadDestino => (this._conoceDatosDeEntidadDestino.hasValue)? this._conoceDatosDeEntidadDestino.value : false;
+  //TODO: Arreglar cuando ya exista en el back
+  //bool get conoceDatosDeEntidadDestino => (this._conoceDatosDeEntidadDestino.hasValue)? this._conoceDatosDeEntidadDestino.value : false;
+  bool get conoceDatosDeEntidadDestino => true;
   LatLng get latLng => (_latLong.hasValue)? LatLng(_latLong.latitud, _latLong.longitud):null;
+  String get fechaPublicacion => '${_getNumberString(_fechaPublicacion.day)}-${_getNumberString(_fechaPublicacion.month)}-${_getNumberString(_fechaPublicacion.year)}';
+
+  String _getNumberString(int number){
+    if(number > 9)
+      return '$number';
+    return '0$number';
+  }
+
 }
 
 

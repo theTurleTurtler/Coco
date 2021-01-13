@@ -51,6 +51,10 @@ class UserServicesManager{
   UserBloc _userBloc;
   CasosServicesManager _cSManager;
 
+  set appContext(BuildContext appContext){
+    this._appContext = appContext;
+  }
+
   Future<void> manageRegisterProcess(Map<String, dynamic> registerData)async{
     try{
       //String name, String email, String password, String confirmedPassword
