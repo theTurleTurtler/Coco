@@ -65,13 +65,12 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
 
   String _tipoDeSolicitud = strings.tiposDeSolicitud[0];
   List<bool> _selectedConoceDatosEntidadDestinoElements = [
-    true,
-    false
+    false,
+    true
   ];
   String _tituloCaso = '';
   String _descripcionCaso = '';
   String _direccion = '';
-  List<File> _multimediaItems = [];
 
   @override
   Widget build(BuildContext context) {
@@ -519,11 +518,12 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
 
   Future<void> _submit()async{
     final MapBloc mapBloc = BlocProvider.of<MapBloc>(context);
-    final MultimediaContainerBloc mCBloc = BlocProvider.of<MultimediaContainerBloc>(context);
+    final MultimediaContainerBloc multiContainerBloc = BlocProvider.of<MultimediaContainerBloc>(context);
     final LatLng mapPosition = mapBloc.state.currentPosition;
     await _casosServicesManager.createCaso(titulo: _tituloCaso, descripcion: _descripcionCaso, 
-                                          direccion: _direccion, latLng: mapPosition, tipo: _tipoDeSolicitud, multimedia: mCBloc.state.items, 
+                                          direccion: _direccion, latLng: mapPosition, tipo: _tipoDeSolicitud, multimedia: multiContainerBloc.state.items, 
                                           conoceDatosDeEntidadDestino: _selectedConoceDatosEntidadDestinoElements[0]);
+    multiContainerBloc.add(ResetMultimedia());
     Navigator.of(context).pushReplacementNamed(_submitNavigationRoute);
   }
 }

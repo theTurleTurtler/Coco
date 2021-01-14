@@ -25,6 +25,8 @@ class MultimediaContainerState {
     videos: videos??this.videos
   );
 
+  MultimediaContainerState reset() => MultimediaContainerState();
+
   List<File> get items{
     List<File> items = photos;
     items.addAll(videos);

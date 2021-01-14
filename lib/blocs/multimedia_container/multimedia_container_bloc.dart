@@ -8,9 +8,16 @@ import 'package:mime_type/mime_type.dart';
 part 'multimedia_container_event.dart';
 part 'multimedia_container_state.dart';
 
+enum FileType{
+  Photo,
+  Video
+}
+
 class MultimediaContainerBloc extends Bloc<MultimediaContainerEvent, MultimediaContainerState> {
-  final List<String> _formatosFotos = ['jpg', 'jpeg', 'png'];
-  final List<String> _formatosVideos = ['mp4'];
+  final Map<FileType, List<String>> _formatsAcceptedForFileType = {
+    FileType.Photo:['jpg', 'jpeg', 'png'],
+    FileType.Video: ['mp4']
+  };
   MultimediaContainerState _currentYieldedState;
   MultimediaContainerBloc() : super(MultimediaContainerState());
 
@@ -20,27 +27,32 @@ class MultimediaContainerBloc extends Bloc<MultimediaContainerEvent, MultimediaC
   ) async* {
     if(event is SetMultimediaItem){
       _setMultimediaToState(event);
+      yield _currentYieldedState;
     }else if(event is DeleteMultimediaItem){
-      _deleteMultimediaItem(event); 
+      _deleteMultimediaItem(event);
+      yield _currentYieldedState; 
     }
-    yield _currentYieldedState;
+    else if(event is ResetMultimedia){
+      yield state.reset();
+    }
+    
   }
 
   void _setMultimediaToState(SetMultimediaItem event){
-    _currentYieldedState = state;
+    _currentYieldedState = state.copyWith();
     List<File> photos = state.photos;
     List<File> videos = state.videos;
     final File item = event.item;
     final String fileName = item.path.split('\\').last;
     final mimeType = mime(item.path);
-    for(String photoFormat in _formatosFotos){
+    for(String photoFormat in _formatsAcceptedForFileType[FileType.Photo]){
       if(mimeType.contains(photoFormat)){
         photos.add(item);
         _currentYieldedState = state.copyWith(hasAnyFile: true, photos: photos);
         return;
       }
     }
-    for(String videoFormat in _formatosVideos){
+    for(String videoFormat in _formatsAcceptedForFileType[FileType.Video]){
       if(mimeType.contains(videoFormat)){
         videos.add(item);
         _currentYieldedState = state.copyWith(hasAnyFile: true, videos: videos);
@@ -52,26 +64,30 @@ class MultimediaContainerBloc extends Bloc<MultimediaContainerEvent, MultimediaC
   }
 
   void _deleteMultimediaItem(DeleteMultimediaItem event){
+    _currentYieldedState = state.copyWith();
     List<File> photos = state.photos;
     List<File> videos = state.videos;
     final String itemPath = event.itemPath;
-    final String tipoFile = event.tipoFile;
-    if(tipoFile == 'photo'){
-      photos.forEach((File photo) {
+    final FileType tipoFile = event.tipoFile;
+    File itemToRemove;
+    if(tipoFile == FileType.Photo){
+      for(File photo in photos){
         if(photo.path == itemPath){
-          photos.remove(photo);
+          itemToRemove = photo;
           _currentYieldedState = state.copyWith(photos: photos);
-          return;
+          break;
         }
-      });
-    }else{
-      videos.forEach((File video){
+      }
+      photos.remove(itemToRemove);
+    }else if(tipoFile == FileType.Video){
+      for(File video in videos){
         if(video.path == itemPath){
-          videos.remove(video);
+          itemToRemove = video;
           _currentYieldedState = state.copyWith(videos: videos);
-          return;        
+          break;        
         }
-      });
+      }
+      videos.remove(itemToRemove);
     }  
   }
   

@@ -22,7 +22,14 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: SingleChildScrollView(
-        child: _crearComponentes()
+        child: SafeArea(
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: _sizeUtils.largeHorizontalScaffoldPadding
+            ),
+            child: _crearComponentes(),
+          )
+        )
       )
     );
   }
@@ -36,29 +43,22 @@ class LoginPage extends StatelessWidget {
   }
 
   Widget _crearComponentes(){
-    return SafeArea(
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: _sizeUtils.largeHorizontalScaffoldPadding
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.05),
-            HeaderLogo(),  
-            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.05),
-            _crearFormInput('email'),
-            SizedBox(height: _sizeUtils.normalSizedBoxHeigh * 0.75),
-            _crearFormInput('password'),
-            SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
-            _crearBotonLogin(),
-            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.022),
-            _crearBotonRegister(),
-            SizedBox(height: _sizeUtils.xasisSobreYasis * 0.065),
-            _crearComponentesIngresoExterno(),
-          ],
-        ),
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(height: _sizeUtils.xasisSobreYasis * 0.05),
+        HeaderLogo(),  
+        SizedBox(height: _sizeUtils.xasisSobreYasis * 0.05),
+        _crearFormInput('email'),
+        SizedBox(height: _sizeUtils.normalSizedBoxHeigh * 0.75),
+        _crearFormInput('password'),
+        SizedBox(height: _sizeUtils.normalSizedBoxHeigh),
+        _crearBotonLogin(),
+        SizedBox(height: _sizeUtils.xasisSobreYasis * 0.022),
+        _crearBotonRegister(),
+        SizedBox(height: _sizeUtils.xasisSobreYasis * 0.065),
+        _crearComponentesIngresoExterno(),
+      ],
     );
   }
 
@@ -116,8 +116,8 @@ class LoginPage extends StatelessWidget {
           Icons.person_outline,
           size: _sizeUtils.normalIconSize,
         ),
-        enabledBorder: _crearLoginInputBorder(),
-        border: _crearLoginInputBorder(),
+        enabledBorder: _crearInputBorder(),
+        border: _crearInputBorder(),
       ),
       onChanged: (String newValue){
         _email = newValue;
@@ -138,8 +138,8 @@ class LoginPage extends StatelessWidget {
           Icons.lock_outline,
           size: _sizeUtils.normalIconSize,
         ),
-        border: _crearLoginInputBorder(),
-        enabledBorder: _crearLoginInputBorder()
+        border: _crearInputBorder(),
+        enabledBorder: _crearInputBorder()
       ),
       onChanged: (String newValue){
         _password = newValue;
@@ -147,7 +147,7 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  InputBorder _crearLoginInputBorder(){
+  InputBorder _crearInputBorder(){
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(_sizeUtils.xasisSobreYasis * 0.065),
       borderSide: BorderSide(

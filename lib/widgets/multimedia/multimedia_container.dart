@@ -54,11 +54,11 @@ class MultimediaContainer extends StatelessWidget {
       mainAxisSpacing: _sizeUtils.xasisSobreYasis * 0.0175,
       crossAxisSpacing: _sizeUtils.xasisSobreYasis * 0.022,
       childAspectRatio: 1,
-      children: _createMultimediaItemContainers(state),
+      children: _createMultimediaItemsContainers(state),
     );
   }
 
-  List<Widget> _createMultimediaItemContainers(MultimediaContainerState state){
+  List<Widget> _createMultimediaItemsContainers(MultimediaContainerState state){
     final List<Widget> itemsContainers = [];
     final List<File> photos = state.photos;
     final List<File> videos = state.videos;
@@ -84,6 +84,9 @@ class MultimediaContainer extends StatelessWidget {
       onTap: (){
         dialogs.showVisualizableFileDialog(_context, VisualizableImage(file: photo));
       },
+      onLongPress: (){
+        dialogs.showDeleteFileDialog(context: _context, filePath: photo.path, fileType: FileType.Photo);
+      },
     );
   }
 
@@ -95,6 +98,9 @@ class MultimediaContainer extends StatelessWidget {
       ),
       onTap: (){
         dialogs.showVisualizableFileDialog(_context, VisualizableVideoPlayer(file: video));
+      },
+      onLongPress: (){
+        dialogs.showDeleteFileDialog(context: _context, filePath: video.path, fileType: FileType.Video);
       },
     );
   }

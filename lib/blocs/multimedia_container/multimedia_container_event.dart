@@ -14,9 +14,11 @@ class SetMultimediaItem extends MultimediaContainerEvent{
 
 class DeleteMultimediaItem extends MultimediaContainerEvent{
   final String itemPath;
-  final String tipoFile;
+  final FileType tipoFile;
   DeleteMultimediaItem({
     @required this.itemPath,
     @required this.tipoFile
   });
 }
+
+class ResetMultimedia extends MultimediaContainerEvent{}

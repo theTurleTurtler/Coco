@@ -2,7 +2,6 @@ import 'package:coco/pages/register_page.dart';
 import 'package:coco/utils/size_utils.dart';
 import 'package:coco/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class RegisterDashBoardPage extends StatelessWidget {
 
   static final route = 'register_dashboard';
