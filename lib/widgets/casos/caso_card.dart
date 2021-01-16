@@ -2,7 +2,7 @@ import 'package:coco/blocs/user/user_bloc.dart';
 import 'package:coco/enums/account_step.dart';
 import 'package:coco/models/caso.dart';
 import 'package:coco/pages/login_page.dart';
-import 'package:coco/pages/modificar_caso_page.dart';
+import 'package:coco/pages/modificar_caso/modificar_caso_page.dart';
 import 'package:coco/utils/size_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

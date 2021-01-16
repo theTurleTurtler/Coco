@@ -13,8 +13,8 @@ class LoginPage extends StatelessWidget {
   SizeUtils _sizeUtils;
   UserServicesManager _userServicesManager;
 
-  String _email = '';
-  String _password = '';
+  String _email = 'email1@gmail.com';
+  String _password = '12345678';
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +106,8 @@ class LoginPage extends StatelessWidget {
   }
 
   Widget _crearEmailInput(){
-    return TextField(
+    return TextFormField(
+      initialValue: _email,
       keyboardType: TextInputType.emailAddress,
       cursorColor: Colors.black,
       textAlignVertical: TextAlignVertical.center,
@@ -126,7 +127,8 @@ class LoginPage extends StatelessWidget {
   }
 
   Widget _crearPasswordInput(){
-    return TextField(
+    return TextFormField(
+      initialValue: _password,
       keyboardType: TextInputType.text,
       obscureText: true,
       cursorColor: Colors.black,

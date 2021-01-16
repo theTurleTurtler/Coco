@@ -1,20 +1,21 @@
+//Última cantidad de lineas observada: 540
 import 'dart:io';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:coco/blocs/casos/casos_services_manager.dart';
 import 'package:coco/blocs/multimedia_container/multimedia_container_bloc.dart';
 import 'package:coco/widgets/multimedia/multimedia_container.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:coco/blocs/map/map_bloc.dart';
 import 'package:coco/enums/tipo_widget_caso_form.dart';
 import 'package:coco/models/caso.dart';
 import 'package:coco/pages/apertura_exitosa_de_caso_page.dart';
 import 'package:coco/pages/casos_home_page.dart';
 import 'package:coco/widgets/google_maps/little_static_map.dart';
-import 'package:coco/utils/size_utils.dart';
 import 'package:coco/widgets/header_bar/header_bar.dart';
+import 'package:coco/utils/size_utils.dart';
 import 'package:coco/utils/static_data/strings_utils.dart' as strings;
 import 'package:coco/utils/dialogs.dart' as dialogs;
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 /**
  * Tiene tres constructores debido a que se deben implementar tres vistas
  * distintas (crear, editar, proponer), pero con los mismos componentes, 
@@ -29,27 +30,63 @@ class ModificarCasoPage extends StatefulWidget {
   /**
    * El tipo de widget que este será(el propósito que cumplirá)
    * -hay tres posibles tipos-
+   * 
    */
   final TipoWidgetCasoForm _tipoWidgetCasoForm;
-  final bool _isAlreadyCreated;
+  final bool isAlreadyCreated;
+  @protected
+  final Function onSubmmit;
+
+  @protected
+  String tipoDeSolicitud = strings.tiposDeSolicitud[0];
+  @protected
+  final List<bool> selectedConoceDatosEntidadDestinoElements = [
+    false,
+    true
+  ];
+  @protected
+  final TextEditingController tituloController = TextEditingController();
+  @protected
+  final TextEditingController descripcionController = TextEditingController();
+  @protected
+  final TextEditingController direccionController = TextEditingController();
 
   //solo se instanciará si este widget no es para crear (_isAlreadyCreated)
   @protected
   Caso caso;
+  @protected
+  CasosServicesManager casosServicesManager;
+
+  ModificarCasoPage({
+    @required this.onSubmmit,
+    this.isAlreadyCreated,
+    TipoWidgetCasoForm tipoWidgetCasoForm,
+    String widgetTitle,
+    String tipoDeSolicitud,
+    List<bool> selectedConoceDatosEntidadDestinoElements,
+    String titulo,
+    String descripcion,
+    String direccion
+  }):
+    _tipoWidgetCasoForm = tipoWidgetCasoForm??TipoWidgetCasoForm.CREAR
+    ;
 
   ModificarCasoPage.crear()
   : _tipoWidgetCasoForm = TipoWidgetCasoForm.CREAR,
-    _isAlreadyCreated = false
+    isAlreadyCreated = false,
+    onSubmmit = null
   ;
 
   ModificarCasoPage.editar()
   : _tipoWidgetCasoForm = TipoWidgetCasoForm.EDITAR,
-    _isAlreadyCreated = true
+    isAlreadyCreated = true,
+    onSubmmit = null
   ;
 
   ModificarCasoPage.proponer()
   : _tipoWidgetCasoForm = TipoWidgetCasoForm.APORTAR,
-    _isAlreadyCreated = true
+    isAlreadyCreated = true,
+    onSubmmit = null
   ;
 
   @override
@@ -57,20 +94,12 @@ class ModificarCasoPage extends StatefulWidget {
 }
 
 class _ModificarCasoPageState extends State<ModificarCasoPage> {
+
   BuildContext _context;
   SizeUtils _sizeUtils;
-  CasosServicesManager _casosServicesManager;
+  
   String _submitNavigationRoute;
   String _title;
-
-  String _tipoDeSolicitud = strings.tiposDeSolicitud[0];
-  List<bool> _selectedConoceDatosEntidadDestinoElements = [
-    false,
-    true
-  ];
-  String _tituloCaso = '';
-  String _descripcionCaso = '';
-  String _direccion = '';
 
   @override
   Widget build(BuildContext context) {
@@ -88,8 +117,8 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
   void _initInitialConfiguration(BuildContext context){
     _context = context;
     _sizeUtils = SizeUtils();
-    _casosServicesManager = CasosServicesManager(appContext: context);
-    if(widget._isAlreadyCreated){
+    widget.casosServicesManager = CasosServicesManager(appContext: context);
+    if(widget.isAlreadyCreated){
       _initCaso();
       _initInitialInputValues();
     }
@@ -104,20 +133,18 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
   }
 
   void _initInitialInputValues(){
-    _tipoDeSolicitud = widget.caso.tipoDeSolicitud;
+    widget.tipoDeSolicitud = widget.caso.tipoDeSolicitud;
     _initInitialToggleElements();
-    _tituloCaso = widget.caso.titulo;
-    _descripcionCaso = widget.caso.descripcion;
-    _direccion = widget.caso.direccion;
+    widget.tituloController.text = widget.caso.titulo;
+    widget.descripcionController.text = widget.caso.descripcion;
+    widget.direccionController.text = widget.caso.direccion;
     //TODO: Implementar el resto de elementos
   }
 
   void _initInitialToggleElements(){
     if(!widget.caso.conoceDatosDeEntidadDestino){
-      _selectedConoceDatosEntidadDestinoElements = [
-        false,
-        true
-      ];
+      widget.selectedConoceDatosEntidadDestinoElements[0] = false;
+      widget.selectedConoceDatosEntidadDestinoElements[1] = true;
     }   
   }
 
@@ -207,10 +234,10 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
   Widget _createDropdown(){
     List<DropdownMenuItem<String>> items = _crearTipoDeSolicitudItems();
     return DropdownButton<String>(
-      value: _tipoDeSolicitud,
+      value: widget.tipoDeSolicitud,
       items: items,
       onChanged: (String newValue){
-        _tipoDeSolicitud = newValue;
+        widget.tipoDeSolicitud = newValue;
         setState(() {
           
         });
@@ -279,8 +306,8 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
         ),
       ),
       onTap: (){
-        _selectedConoceDatosEntidadDestinoElements[(indexButton-1)%2] = false;
-        _selectedConoceDatosEntidadDestinoElements[indexButton] = true;
+        widget.selectedConoceDatosEntidadDestinoElements[(indexButton-1)%2] = false;
+        widget.selectedConoceDatosEntidadDestinoElements[indexButton] = true;
         setState(() {
           
         });
@@ -289,7 +316,7 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
   }
 
   BoxDecoration _createToggleButtonsItemDecoration(int indexButton){
-    final Color itemColor = (_selectedConoceDatosEntidadDestinoElements[indexButton])? Colors.green[600] : Colors.grey[300];
+    final Color itemColor = (widget.selectedConoceDatosEntidadDestinoElements[indexButton])? Colors.green[600] : Colors.grey[300];
     return BoxDecoration(
       color: itemColor,
       borderRadius: BorderRadius.circular(_sizeUtils.xasisSobreYasis * 0.1)
@@ -311,10 +338,8 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
     return Container(
       width: _sizeUtils.xasisSobreYasis * 0.25,
       child: TextFormField(
-        initialValue: _tituloCaso,
-        onChanged: (String newValue){
-          _tituloCaso = newValue;
-        },
+        controller: widget.tituloController,
+        //initialValue: _textEditingController.text,
       ),
     );
   }
@@ -334,7 +359,7 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
     return Container(
       height: _sizeUtils.xasisSobreYasis * 0.35,
       child: TextFormField(
-        initialValue: _descripcionCaso,
+        controller: widget.descripcionController,
         maxLines: 15,
         maxLength: 300,
         decoration: InputDecoration(
@@ -344,9 +369,6 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
           enabledBorder: _crearDescripcionInputBorder(),
           focusedBorder: _crearDescripcionInputBorder()
         ),
-        onChanged: (String newValue){
-          _descripcionCaso = newValue;
-        },
       ),
     );
   }
@@ -374,10 +396,7 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
     return Container(
       width: _sizeUtils.xasisSobreYasis * 0.25,
       child: TextFormField(
-        initialValue: _direccion,
-        onChanged: (String newValue){
-          _direccion = newValue;
-        },
+        controller: widget.direccionController,
         onEditingComplete: _onInputDirectionEditingComplete,
       ),
     );
@@ -386,7 +405,7 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
   void _onInputDirectionEditingComplete(){
     if(widget._tipoWidgetCasoForm == TipoWidgetCasoForm.CREAR){
       final MapBloc mapaBloc = BlocProvider.of<MapBloc>(context);
-      final UpdatePositionFromStringDirection event = UpdatePositionFromStringDirection(direction: _direccion);
+      final UpdatePositionFromStringDirection event = UpdatePositionFromStringDirection(direction: widget.direccionController.text);
       mapaBloc.add(event);
       FocusScope.of(context).requestFocus(new FocusNode());
     }
@@ -512,17 +531,18 @@ class _ModificarCasoPageState extends State<ModificarCasoPage> {
           fontSize: _sizeUtils.xasisSobreYasis * 0.025
         ),
       ),
-      onPressed: _submit,
+      onPressed: submit,
     );
   }
 
-  Future<void> _submit()async{
+  @protected
+  Future<void> submit()async{
     final MapBloc mapBloc = BlocProvider.of<MapBloc>(context);
     final MultimediaContainerBloc multiContainerBloc = BlocProvider.of<MultimediaContainerBloc>(context);
     final LatLng mapPosition = mapBloc.state.currentPosition;
-    await _casosServicesManager.createCaso(titulo: _tituloCaso, descripcion: _descripcionCaso, 
-                                          direccion: _direccion, latLng: mapPosition, tipo: _tipoDeSolicitud, multimedia: multiContainerBloc.state.items, 
-                                          conoceDatosDeEntidadDestino: _selectedConoceDatosEntidadDestinoElements[0]);
+    await widget.casosServicesManager.createCaso(titulo: widget.tituloController.text, descripcion: widget.descripcionController.text, 
+                                          direccion: widget.direccionController.text, latLng: mapPosition, tipo: widget.tipoDeSolicitud, multimedia: multiContainerBloc.state.items, 
+                                          conoceDatosDeEntidadDestino: widget.selectedConoceDatosEntidadDestinoElements[0]);
     multiContainerBloc.add(ResetMultimedia());
     Navigator.of(context).pushReplacementNamed(_submitNavigationRoute);
   }

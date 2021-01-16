@@ -1,7 +1,7 @@
 import 'package:coco/pages/casos_home_page.dart';
 import 'package:coco/pages/lista_de_casos_page.dart';
 import 'package:coco/pages/login_page.dart';
-import 'package:coco/pages/modificar_caso_page.dart';
+import 'package:coco/pages/modificar_caso/modificar_caso_page.dart';
 
 final List<Map<String, dynamic>> navigationMenuItems = [
   {

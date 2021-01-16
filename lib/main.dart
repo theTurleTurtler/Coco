@@ -7,7 +7,7 @@ import 'package:coco/pages/apertura_exitosa_de_caso_page.dart';
 import 'package:coco/pages/caso_detail_page.dart';
 import 'package:coco/pages/casos_home_page.dart';
 import 'package:coco/pages/lista_de_casos_page.dart';
-import 'package:coco/pages/modificar_caso_page.dart';
+import 'package:coco/pages/modificar_caso/modificar_caso_page.dart';
 import 'package:coco/pages/login_page.dart';
 import 'package:coco/pages/register_dashboard_page.dart';
 import 'package:coco/pages/register_page.dart';
